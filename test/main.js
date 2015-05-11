@@ -55,7 +55,78 @@ describe('pattern utilities', function () {
 
   });
 
+  describe('data manipulation', function (){
+
+    it('should convert yaml data to an object', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Heading Level 1 Test H1');
+      patternObject.should.have.property('description', 'First level heading inside a test');
+      patternObject.should.have.property('category', 'base');
+      patternObject.should.have.property('twig', './test-elm-h1.twig');
+      patternObject.should.have.property('sass', './test-elm-h1.scss');
+
+    });
+
+    it('should create the compiled yaml object', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      var compiledYmlObject = utils.convertObjectToYaml(patternObject);
+
+      String(compiledYmlObject).should.containEql('name: Heading Level 1 Test H1');
+      String(compiledYmlObject).should.containEql('description: First level heading inside a test');
+      String(compiledYmlObject).should.containEql('category: base');
+      String(compiledYmlObject).should.containEql('twig: ./test-elm-h1.twig');
+      String(compiledYmlObject).should.containEql('sass: ./test-elm-h1.scss');
+      String(compiledYmlObject).should.containEql('subcategory: subcatbase');
+
+    });
+
+  })
+
 });
 
+describe('compilers', function () {
 
+
+  describe('css compiling', function () {
+
+    it('should compile sass into css', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternObject = utils.convertYamlToObject(file.contents);
+      
+      var cssCompilerData = {
+        src: patternObject.sass
+      }
+
+      var cssOutput = utils.sassCompiler(paths, cssCompilerData);
+
+      String(cssOutput).should.containEql('.base--h1, .base--STYLED h1 {');
+
+    });
+
+  });
+
+  describe('html compiling', function () {
+
+    it('should compile twig into html', function () {
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      var compiledHtml = utils.twigCompiler(path.join(paths.folder,patternObject.twig),patternObject.data);
+      
+      String(compiledHtml).should.equal('<h1 class="test--h1">Test Header 1</h1>\n');
+
+    });
+  
+  });
+})
 
