@@ -12,11 +12,13 @@ var utils = require('pattern-import-utilities');
 
 ### Get File Paths
 
+A function getting an object containing strings of paths to this file and its containing directory.
+
+#### Usage
+
 `var paths = utils.getFilePaths(file);`
 
 #### Returns
-
-An object containing strings of paths to this file and its containing directory.
 
 ```
 { absolute: '/Users/someone/development/gitrepos/pattern-library-utilities/test/fixtures/test-elm-h1/pattern.yml',
@@ -30,3 +32,15 @@ An object containing strings of paths to this file and its containing directory.
 ##### file
 
 a vinyl file object
+
+### Create File
+
+A function to create a vinyl file object
+
+#### Usage
+
+`var paths = utils.createFile(filePath);`
+
+#### Returns
+
+A vinyl file
