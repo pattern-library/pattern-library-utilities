@@ -1,6 +1,6 @@
 {
   "name": "pattern-library-utilities",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Supporting utilities for the pattern library",
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "should": "^5.2.0"
   },
   "dependencies": {
+    "browser-sync": "^2.7.1",
     "copy-to": "^2.0.1",
     "fs-extra": "^0.18.0",
     "gulp": "^3.8.11",
