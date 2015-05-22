@@ -1,4 +1,0 @@
-name: Heading Level 2 Generic H2
-description: Second level heading without twig or sass
-html: ./generic-elm-h2.html
-css: ./generic-elm-h2.css
