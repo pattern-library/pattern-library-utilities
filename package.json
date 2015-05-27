@@ -32,6 +32,7 @@
     "copy-to": "^2.0.1",
     "fs-extra": "^0.18.0",
     "gulp": "^3.8.11",
+    "gulp-doxx": "^0.0.4",
     "gulp-inject": "^1.2.0",
     "gulp-util": "^3.0.4",
     "js-yaml": "^3.2.7",
