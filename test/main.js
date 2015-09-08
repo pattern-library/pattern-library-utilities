@@ -16,6 +16,13 @@ var createTestFilePath = function(filePath) {
 
 // create our options
 var options = {
+  dataFileName: 'pattern.yml',
+  htmlTemplateDest: './test',
+  stylesDest: './test/styles',
+  importStyles: true,
+  scriptsDest: './test/js',
+  importScripts: true,
+  cssCompiler: 'sass', // sass, less, stylus, none
   templateEngine: 'twig',
   convertCategoryTitles: true,
   uncategorizedDir: 'uncategorized',
@@ -102,36 +109,6 @@ describe('pattern utilities', function () {
 
   });
 
-  describe('pattern template name', function (){
-    
-    it('should get pattern filename matching the default templateEngine', function () {
-
-      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
-      var patternObject = utils.convertYamlToObject(file.contents);
-
-      patternObject.should.have.property('name', 'Heading Level 1 Test H1');
-      patternObject.should.have.property('twig', './test-elm-h1.twig');
-
-      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
-      patternTemplate.should.equal('./test-elm-h1.twig');
-
-    })
-    
-    it('should default to html for patterns that do not match the default templateEngine', function () {
-
-      var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
-      var patternObject = utils.convertYamlToObject(file.contents);
-
-      patternObject.should.have.property('name', 'Em');
-      patternObject.should.have.property('html', './em.html');
-
-      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
-      patternTemplate.should.equal('./em.html');
-
-    })
-
-  })
-
   describe('data manipulation', function (){
 
     it('should convert yaml data to an object', function () {
@@ -164,6 +141,113 @@ describe('pattern utilities', function () {
 
     });
 
+  })
+
+  describe('pattern template name', function (){
+    
+    it('should get pattern filename matching the default templateEngine', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Heading Level 1 Test H1');
+      patternObject.should.have.property('twig', './test-elm-h1.twig');
+
+      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
+      patternTemplate.should.equal('./test-elm-h1.twig');
+
+    })
+    
+    it('should default to html for patterns that do not match the default templateEngine', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Em');
+      patternObject.should.have.property('html', './em.html');
+
+      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
+      patternTemplate.should.equal('./em.html');
+
+    })
+
+  })
+
+  describe('pattern style filename', function (){
+    
+    it('should get pattern\'s style filename matching the default cssCompiler', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Heading Level 1 Test H1');
+      patternObject.should.have.property('sass', './test-elm-h1.scss');
+
+      var patternStyle = utils.getPatternStyles(patternObject, options);
+      patternStyle.name.should.equal('./test-elm-h1.scss');
+      patternStyle.type.should.equal('sass');
+
+    })
+    
+    it('should default to css for pattern styles that do not match the default cssCompiler', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Base Image');
+      patternObject.should.have.property('css', './img.css');
+
+      var patternStyle = utils.getPatternStyles(patternObject, options);
+      patternStyle.name.should.equal('./img.css');
+      patternStyle.type.should.equal('css');
+
+    })
+
+  })
+
+  describe('parse pattern data file', function () {
+
+    it('should determine the destination for files matching defaults', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternImportData(paths, options);
+
+      patternFiles.should.have.property('filesToWrite');
+      patternFiles.filesToWrite[0].should.have.property('dest', 'test/base/subcatbase/test-elm-h1.twig');
+      patternFiles.filesToWrite[1].should.have.property('dest', 'test/base/subcatbase/test-elm-h1.json');
+      patternFiles.should.have.property('filesToCopy');
+      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/scss/base/subcatbase/test-elm-h1.scss');
+      patternFiles.filesToCopy[1].should.have.property('dest', 'test/js/base/subcatbase/test-elm-h1.js');
+
+    });
+
+    it('should determine the destination for patterns without a default templateEngine file', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternImportData(paths, options);
+
+      patternFiles.should.have.property('filesToWrite');
+      patternFiles.filesToWrite[0].should.have.property('dest', 'test/00-atoms/test-em.json');
+      patternFiles.should.have.property('filesToCopy');
+      patternFiles.filesToCopy[0].should.have.property('dest', 'test/00-atoms/em.html');
+
+    });
+
+    it('should determine the destination for patterns without a default cssCompiler file', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternImportData(paths, options);
+      
+      patternFiles.should.have.property('filesToWrite');
+      patternFiles.filesToWrite[0].should.have.property('dest', 'test/00-atoms/03-images/test-img.twig');
+      patternFiles.filesToWrite[1].should.have.property('dest', 'test/00-atoms/03-images/test-img.json');
+      patternFiles.should.have.property('filesToCopy');
+      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/css/00-atoms/03-images/img.css');
+
+    });
   })
 
 });
@@ -372,7 +456,7 @@ describe('compilers', function () {
         String(twigContent).should.containEql("{% include 'atoms/images/img/img.twig' with img %}");
         options.convertCategoryTitles = true;
       })
-      
+
       it.skip('should compile twig into html', function () {
         var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
         var paths = utils.getFilePaths(file);
