@@ -322,14 +322,67 @@ describe('compilers', function () {
 
   describe('html compiling', function () {
 
-    it.skip('should compile twig into html', function () {
-      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
-      var paths = utils.getFilePaths(file);
-      var patternObject = utils.convertYamlToObject(file.contents);
+    describe('twig functions', function () {
 
-      var compiledHtml = utils.twigCompiler({ path: path.join(paths.folder,patternObject.twig) },patternObject.data);
+      it('should extract a file path from a twig include', function () {
+        // double quote test
+        var twigInclude = '{% include "link/to/some/twigFile.twig" %}';
+        var includePath = utils.extractTwigIncludePath(twigInclude);
+        includePath[1].should.equal('link/to/some/twigFile.twig');
+        // single quote test
+        var twigInclude = "{% include 'link/to/some/twigFile.twig' %}";
+        var includePath = utils.extractTwigIncludePath(twigInclude);
+        includePath[1].should.equal('link/to/some/twigFile.twig');
+        // more complex code test
+        var twigInclude = "{% include 'link/to/some/twigFile.twig' with {'promo': hero} %}";
+        var includePath = utils.extractTwigIncludePath(twigInclude);
+        includePath[1].should.equal('link/to/some/twigFile.twig');
+        // test with other stuff on the same line
+        var twigInclude = "{% include 'link/to/some/twigFile.twig' with {'promo': hero} %} <!-- what if this is here: '%}'? -->";
+        var includePath = utils.extractTwigIncludePath(twigInclude);
+        includePath[1].should.equal('link/to/some/twigFile.twig');
+      });
+
+      it('should create new file paths from categories', function () {
+        // two-category path
+        var twoCatPath = 'atoms/global/pattern1/pattern1.twig';
+        var newPath = utils.createNewCategoryPath(options,twoCatPath);
+        String(newPath).should.containEql('00-atoms/00-global/pattern1.twig');
+        // one-category path
+        var oneCatPath = 'templates/pattern1/pattern1.twig';
+        var newPath = utils.createNewCategoryPath(options,oneCatPath);
+        String(newPath).should.containEql('03-templates/pattern1.twig');
+        // unmatched category path
+        var nomatchCatPath = 'nomatch/pattern1/pattern1.twig';
+        var newPath = utils.createNewCategoryPath(options,nomatchCatPath);
+        String(newPath).should.containEql('nomatch/pattern1.twig');
+      });
+
+      it('should convert all includes in a single twig file', function () {
+        var twigFile = utils.createFile(createTestFilePath('molecules/media/figure-image/figure-image.twig'));
+        // with conversion
+        var twigContent = utils.convertTwigIncludes(options,twigFile.contents.toString('utf8'));
+        String(twigContent).should.containEql("{% include '00-atoms/03-images/img.twig' with img %}");
+        String(twigContent).should.not.containEql("{% include 'atoms/images/img/img.twig' with img %}");
+
+        //without conversion
+        options.convertCategoryTitles = false;
+        var twigContent = utils.convertTwigIncludes(options,twigFile.contents.toString('utf8'));
+        String(twigContent).should.not.containEql("{% include '00-atoms/03-images/img.twig' with img %}");
+        String(twigContent).should.containEql("{% include 'atoms/images/img/img.twig' with img %}");
+        options.convertCategoryTitles = true;
+      })
       
-      String(compiledHtml).should.equal('<h1 class="test--h1">Test Header 1</h1>\n');
+      it.skip('should compile twig into html', function () {
+        var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+        var paths = utils.getFilePaths(file);
+        var patternObject = utils.convertYamlToObject(file.contents);
+
+        var compiledHtml = utils.twigCompiler({ path: path.join(paths.folder,patternObject.twig) },patternObject.data);
+        
+        String(compiledHtml).should.equal('<h1 class="test--h1">Test Header 1</h1>\n');
+
+      });
 
     });
   
