@@ -16,6 +16,7 @@ var createTestFilePath = function(filePath) {
 
 // create our options
 var options = {
+  templateEngine: 'twig',
   convertCategoryTitles: true,
   uncategorizedDir: 'uncategorized',
   convertCategoryTitlesData: {
@@ -100,6 +101,36 @@ describe('pattern utilities', function () {
     String(paths.directory).should.equal('test-elm-h1');
 
   });
+
+  describe('pattern template name', function (){
+    
+    it('should get pattern filename matching the default templateEngine', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Heading Level 1 Test H1');
+      patternObject.should.have.property('twig', './test-elm-h1.twig');
+
+      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
+      patternTemplate.should.equal('./test-elm-h1.twig');
+
+    })
+    
+    it('should default to html for patterns that do not match the default templateEngine', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Em');
+      patternObject.should.have.property('html', './em.html');
+
+      var patternTemplate = utils.getPatternTemplateName(patternObject, options);
+      patternTemplate.should.equal('./em.html');
+
+    })
+
+  })
 
   describe('data manipulation', function (){
 
@@ -259,7 +290,7 @@ describe('category utilities', function () {
       patternCategoryPath.should.equal('made-up-directory');
 
     });
-    
+
   })
 
 

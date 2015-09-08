@@ -1,6 +1,6 @@
 name: Em
 description: Emphasized text
-twig: ./em.twig
+html: ./em.html
 category: atoms
 data:
   em:
