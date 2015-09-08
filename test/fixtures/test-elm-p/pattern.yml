@@ -2,7 +2,7 @@ name: Paragraph tag tester testing
 description: This is a very fancy Paragraph tag which is used to test.
 twig: ./test-elm-p.twig
 sass: ./test-elm-p.scss
-category: base
+category: atoms
 subcategory: sometestsubcat
 script: ./test-elm-p.js
 data:
