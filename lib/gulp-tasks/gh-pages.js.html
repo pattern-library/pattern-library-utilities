@@ -72,11 +72,13 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
+            <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
@@ -121,13 +123,7 @@ var gulp = require('gulp'),
           <div class="description"><p>default options for ghPages gulp task</p> </div>
           <pre><code class="language-javascript">var options = {
   	config: {},
-    src: ['./docs'],
-    dependencies: [] // gulp tasks which should be run before this task
-
-  };
-
-  return options;
-}</code></pre>
+    src: ['./patternlab/public</code></pre>
           <section id="gulpGhPages">
             <h1>gulpGhPages</h1>
             <h5 class="subheader"></h5>
@@ -156,14 +152,14 @@ var gulp = require('gulp'),
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Gulp task that sends files to the gh-pages branch on github.com</p> </div>
+          <div class="description"><p>&#39;],<br />    taskName: &#39;ghPages&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />}</p><p>/**<br />Gulp task that sends files to the gh-pages branch on github.com</p> </div>
           <pre><code class="language-javascript">exports.gulpGhPages = function (gulp, projectOptions) {
 
   var options = getOptions(getDefaultOptions(),projectOptions);
 	
-	gulp.task('ghPages', options.dependencies, function () {
-	    return gulp.src(options.src)
-	      .pipe(ghPages(options.config));
+	gulp.task(options.taskName, options.dependencies, function () {
+    return gulp.src(options.src)
+      .pipe(ghPages(options.config));
 	});
 }</code></pre>
         </div>

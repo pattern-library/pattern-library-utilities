@@ -72,12 +72,12 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
-            <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
@@ -89,35 +89,51 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#copy"><i class="alert alert-success"></i><span>copy</span></a>
+              <li><a href="#convertRecursiveJsonVariables"><i class="alert alert-info"></i><span>convertRecursiveJsonVariables</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="copy">
-            <h1>copy</h1>
+          <section id="convertRecursiveJsonVariables">
+            <h1>convertRecursiveJsonVariables</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>copy</span>
+              <div class="label label-info radius ctx-type">method</div><span>exports.convertRecursiveJsonVariables()</span>
             </p>
           </section>
-          <div class="description"><p>Module dependencies.</p> </div>
-          <pre><code class="language-javascript">var copy = require('copy-to');
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>object</td>
+                <td>Object</td>
+                <td>self-referencing object with variables</td>
+              </tr>
+              <tr>
+                <td>regex</td>
+                <td>Object</td>
+                <td>regular expression to find variables within the object </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Convert variables in a json object recursively</p> </div>
+          <pre><code class="language-javascript">exports.convertRecursiveJsonVariables = function (object, regex) {
 
-copy(require('./get-file-paths'))
-.and(require('./get-options'))
-.and(require('./convert-recursive-json-variables'))
-.and(require('./create-file'))
-.and(require('./convert-yaml'))
-.and(require('./compilers/css-compilers/sass-compiler'))
-.and(require('./compilers/html-compilers/twig-compiler'))
-.and(require('./gulp-tasks/angular-templatecache'))
-.and(require('./gulp-tasks/browsersync'))
-.and(require('./gulp-tasks/doxx'))
-.and(require('./gulp-tasks/file-glob-inject'))
-.and(require('./gulp-tasks/gh-pages'))
-.to(module.exports);</code></pre>
+  var checkForVariables;
+  // go through objects's contents, find the variables, replace them
+  while ((checkForVariables = regex.exec(JSON.stringify(object))) !== null) {
+    object = resolve(object);
+    checkForVariables = regex.exec(JSON.stringify(object));
+  }
+  return object;
+}</code></pre>
         </div>
       </div>
     </div>

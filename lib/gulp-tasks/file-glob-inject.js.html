@@ -72,11 +72,13 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
+            <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
@@ -137,14 +139,15 @@ var inject = require('gulp-inject'),
     config: {
       relative: true
     },
-    src: './app/index.html', // source file with types of files to be glob-injected
+    src: './index.html', // source file with types of files to be glob-injected
     files: [ // relative paths to files to be globbed
-      '!./app/bower_components</code></pre>
-          <div class="description"><p>/<em>&#39;,<br />      &#39;!./app/_gulp/</em>&#39;,<br />      &#39;./app/*</p> </div>
+      '!./node_modules</code></pre>
+          <div class="description"><p>/<em>&#39;,<br />      &#39;!./_gulp/</em>&#39;,<br />      &#39;./*</p> </div>
           <pre><code class="language-javascript">'
 
     ],
-    dest: './app', // destination directory where we'll write our ammended source file
+    dest: './', // destination directory where we'll write our ammended source file
+    taskName: 'file-glob-inject', // default task name
     dependencies: [] // gulp tasks which should be run before this task
   }
 
@@ -183,8 +186,8 @@ var inject = require('gulp-inject'),
 
   var options = getOptions(getDefaultOptions(),projectOptions);
 
-  gulp.task('file-glob-inject', options.dependencies, function() {
-    globInjectTask(gulp, options);
+  gulp.task(options.taskName, options.dependencies, function() {
+    return globInjectTask(gulp, options);
   });
 }</code></pre>
           <section id="getDefaultScssOptions">
@@ -207,13 +210,14 @@ var inject = require('gulp-inject'),
         return '@import \'' + filepath + '\';';
       }
     },
-    src: './app/styles/styles.scss',
+    src: './styles/style.scss',
     files: [ // Application scss files
-      '!./app/bower_components</code></pre>
-          <div class="description"><p>/<em>&#39;,<br />      &#39;!./app/styles/styles.scss&#39;,<br />      &#39;./app/</em></p> </div>
+      '!./node_modules</code></pre>
+          <div class="description"><p>/<em>&#39;,<br />      &#39;!./styles/style.scss&#39;,<br />      &#39;./</em></p> </div>
           <pre><code class="language-javascript">.scss'
     ],
-    dest: './app/styles',
+    dest: './styles',
+    taskName: 'scss-glob-inject', // default task name
     dependencies: []
   }
 
@@ -252,8 +256,8 @@ var inject = require('gulp-inject'),
 
   var options = getOptions(getDefaultScssOptions(),projectOptions);
 
-  gulp.task('scss-glob-inject', options.dependencies, function() {
-    globInjectTask(gulp, options);
+  gulp.task(options.taskName, options.dependencies, function() {
+    return globInjectTask(gulp, options);
   });
 
 }</code></pre>
