@@ -184,8 +184,8 @@ describe('pattern utilities', function () {
       patternObject.should.have.property('sass', './test-elm-h1.scss');
 
       var patternStyle = utils.getPatternStyles(patternObject, options);
-      patternStyle.name.should.equal('./test-elm-h1.scss');
-      patternStyle.type.should.equal('sass');
+      patternStyle[0].name.should.equal('./test-elm-h1.scss');
+      patternStyle[0].type.should.equal('sass');
 
     })
     
@@ -198,8 +198,23 @@ describe('pattern utilities', function () {
       patternObject.should.have.property('css', './img.css');
 
       var patternStyle = utils.getPatternStyles(patternObject, options);
-      patternStyle.name.should.equal('./img.css');
-      patternStyle.type.should.equal('css');
+      patternStyle[0].name.should.equal('./img.css');
+      patternStyle[0].type.should.equal('css');
+
+    })
+    
+    it('should allow for an array of style files', function () {
+
+      var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Header html5 element');
+
+      var patternStyle = utils.getPatternStyles(patternObject, options);
+      patternStyle[0].name.should.equal('./test-include-header-1.scss');
+      patternStyle[0].type.should.equal('sass');
+      patternStyle[1].name.should.equal('./test-include-header-2.scss');
+      patternStyle[1].type.should.equal('sass');
 
     })
 
@@ -222,6 +237,20 @@ describe('pattern utilities', function () {
 
     });
 
+    it('should determine the destination for patterns with multiple files per type', function () {
+
+      var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternImportData(paths, options);
+
+      patternFiles.should.have.property('filesToCopy');
+      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/scss/base/subcatbase23/test-include-header-1.scss');
+      patternFiles.filesToCopy[1].should.have.property('dest', 'test/styles/scss/base/subcatbase23/test-include-header-2.scss');
+      patternFiles.filesToCopy[2].should.have.property('dest', 'test/js/base/subcatbase23/test-include-header-1.js');
+      patternFiles.filesToCopy[3].should.have.property('dest', 'test/js/base/subcatbase23/test-include-header-2.js');
+
+    });
+
     it('should determine the destination for patterns without a default templateEngine file', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
@@ -240,7 +269,7 @@ describe('pattern utilities', function () {
       var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
       var paths = utils.getFilePaths(file);
       var patternFiles = utils.getPatternImportData(paths, options);
-      
+
       patternFiles.should.have.property('filesToWrite');
       patternFiles.filesToWrite[0].should.have.property('dest', 'test/00-atoms/03-images/test-img.twig');
       patternFiles.filesToWrite[1].should.have.property('dest', 'test/00-atoms/03-images/test-img.json');
