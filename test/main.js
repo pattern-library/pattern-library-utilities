@@ -220,20 +220,21 @@ describe('pattern utilities', function () {
 
   })
 
-  describe('parse pattern data file', function () {
+  describe('parsing pattern data file', function () {
 
     it('should determine the destination for files matching defaults', function () {
 
       var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
       var paths = utils.getFilePaths(file);
-      var patternFiles = utils.getPatternImportData(paths, options);
+      var patternFiles = utils.getPatternFiles(paths, options);
 
-      patternFiles.should.have.property('filesToWrite');
-      patternFiles.filesToWrite[0].should.have.property('dest', 'test/base/subcatbase/test-elm-h1.twig');
-      patternFiles.filesToWrite[1].should.have.property('dest', 'test/base/subcatbase/test-elm-h1.json');
-      patternFiles.should.have.property('filesToCopy');
-      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/scss/base/subcatbase/test-elm-h1.scss');
-      patternFiles.filesToCopy[1].should.have.property('dest', 'test/js/base/subcatbase/test-elm-h1.js');
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/base/subcatbase/test-elm-h1.twig');
+      String(patternFiles.files[0].contents).should.equal('<h1 class="{{header.class}}">{{ header.text }}</h1>\n');
+      patternFiles.files[1].history[0].should.containEql('test/base/subcatbase/test-elm-h1.json');
+      String(patternFiles.files[1].contents).should.containEql('    "text": "Test Header 1",');
+      patternFiles.files[2].history[0].should.containEql('test/styles/scss/base/subcatbase/test-elm-h1.scss');
+      patternFiles.files[3].history[0].should.containEql('test/js/base/subcatbase/test-elm-h1.js');
 
     });
 
@@ -241,13 +242,17 @@ describe('pattern utilities', function () {
 
       var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
       var paths = utils.getFilePaths(file);
-      var patternFiles = utils.getPatternImportData(paths, options);
+      var patternFiles = utils.getPatternFiles(paths, options);
 
-      patternFiles.should.have.property('filesToCopy');
-      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/scss/base/subcatbase23/test-include-header-1.scss');
-      patternFiles.filesToCopy[1].should.have.property('dest', 'test/styles/scss/base/subcatbase23/test-include-header-2.scss');
-      patternFiles.filesToCopy[2].should.have.property('dest', 'test/js/base/subcatbase23/test-include-header-1.js');
-      patternFiles.filesToCopy[3].should.have.property('dest', 'test/js/base/subcatbase23/test-include-header-2.js');
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/base/subcatbase23/test-include-header.twig');
+      String(patternFiles.files[0].contents).should.containEql('<!-- PATTERN START - /fixtures/test-include-header -->');
+      patternFiles.files[1].history[0].should.containEql('test/base/subcatbase23/test-include-header.json');
+      String(patternFiles.files[1].contents).should.containEql('    "text": "Test Header 1",');
+      patternFiles.files[2].history[0].should.containEql('test/styles/scss/base/subcatbase23/test-include-header-1.scss');
+      patternFiles.files[3].history[0].should.containEql('test/styles/scss/base/subcatbase23/test-include-header-2.scss');
+      patternFiles.files[4].history[0].should.containEql('test/js/base/subcatbase23/test-include-header-1.js');
+      patternFiles.files[5].history[0].should.containEql('test/js/base/subcatbase23/test-include-header-2.js');
 
     });
 
@@ -255,12 +260,13 @@ describe('pattern utilities', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
       var paths = utils.getFilePaths(file);
-      var patternFiles = utils.getPatternImportData(paths, options);
+      var patternFiles = utils.getPatternFiles(paths, options);
 
-      patternFiles.should.have.property('filesToWrite');
-      patternFiles.filesToWrite[0].should.have.property('dest', 'test/00-atoms/test-em.json');
-      patternFiles.should.have.property('filesToCopy');
-      patternFiles.filesToCopy[0].should.have.property('dest', 'test/00-atoms/em.html');
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/00-atoms/em.html');
+      String(patternFiles.files[0].contents).should.containEql('<em class="{{em.class}}">{{ em.text }}</em>\n');
+      patternFiles.files[1].history[0].should.containEql('test/00-atoms/test-em.json');
+      String(patternFiles.files[1].contents).should.containEql('"text": "Emphasized text",');
 
     });
 
@@ -268,13 +274,13 @@ describe('pattern utilities', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
       var paths = utils.getFilePaths(file);
-      var patternFiles = utils.getPatternImportData(paths, options);
+      var patternFiles = utils.getPatternFiles(paths, options);
 
-      patternFiles.should.have.property('filesToWrite');
-      patternFiles.filesToWrite[0].should.have.property('dest', 'test/00-atoms/03-images/test-img.twig');
-      patternFiles.filesToWrite[1].should.have.property('dest', 'test/00-atoms/03-images/test-img.json');
-      patternFiles.should.have.property('filesToCopy');
-      patternFiles.filesToCopy[0].should.have.property('dest', 'test/styles/css/00-atoms/03-images/img.css');
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/00-atoms/03-images/test-img.twig');
+      String(patternFiles.files[0].contents).should.containEql('<!-- PATTERN START - /pattern-library/patterns/base/img -->');
+      patternFiles.files[1].history[0].should.containEql('test/00-atoms/03-images/test-img.json');
+      String(patternFiles.files[1].contents).should.containEql('"src": "http://placehold.it/350x150&text=base--img",');
 
     });
   })
