@@ -238,6 +238,19 @@ describe('pattern utilities', function () {
 
     });
 
+    it('should include the original pattern source path in the data', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternFiles(paths, options);
+
+      patternFiles.should.have.property('data');
+      patternFiles.data.should.have.property('patternSource');
+      patternFiles.data.patternSource.should.containEql('test/fixtures/test-elm-h1');
+
+    });
+
+
     it('should determine the destination for patterns with multiple files per type', function () {
 
       var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
