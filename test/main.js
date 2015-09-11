@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 
 var createTestFilePath = function(filePath) {
-  
+
   return path.join(__filename, '..', 'fixtures', filePath);
 
 };
@@ -144,7 +144,7 @@ describe('pattern utilities', function () {
   })
 
   describe('pattern template name', function (){
-    
+
     it('should get pattern filename matching the default templateEngine', function () {
 
       var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
@@ -157,7 +157,7 @@ describe('pattern utilities', function () {
       patternTemplate.should.equal('./test-elm-h1.twig');
 
     })
-    
+
     it('should default to html for patterns that do not match the default templateEngine', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
@@ -174,7 +174,7 @@ describe('pattern utilities', function () {
   })
 
   describe('pattern style filename', function (){
-    
+
     it('should get pattern\'s style filename matching the default cssCompiler', function () {
 
       var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
@@ -188,7 +188,7 @@ describe('pattern utilities', function () {
       patternStyle[0].type.should.equal('sass');
 
     })
-    
+
     it('should default to css for pattern styles that do not match the default cssCompiler', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
@@ -202,7 +202,7 @@ describe('pattern utilities', function () {
       patternStyle[0].type.should.equal('css');
 
     })
-    
+
     it('should allow for an array of style files', function () {
 
       var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
@@ -426,7 +426,7 @@ describe('compilers', function () {
       var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
       var paths = utils.getFilePaths(file);
       var patternObject = utils.convertYamlToObject(file.contents);
-      
+
       var cssCompilerData = {
         src: patternObject.sass
       }
@@ -497,14 +497,14 @@ describe('compilers', function () {
         var paths = utils.getFilePaths(file);
         var patternObject = utils.convertYamlToObject(file.contents);
 
-        var compiledHtml = utils.twigCompiler({ path: path.join(paths.folder,patternObject.twig) },patternObject.data);
-        
+        var compiledHtml = utils.twigCompiler({path: path.join(paths.folder,patternObject.twig)},patternObject.data);
+
         String(compiledHtml).should.equal('<h1 class="test--h1">Test Header 1</h1>\n');
 
       });
 
     });
-  
+
   });
 })
 
