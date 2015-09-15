@@ -446,7 +446,7 @@ describe('compilers', function () {
 
       var cssOutput = utils.sassCompiler(paths, cssCompilerData);
 
-      String(cssOutput).should.containEql('.base--h1, .base--STYLED h1 {');
+      String(cssOutput).should.containEql('.base--h1,\n.base--STYLED h1 {');
 
     });
 
