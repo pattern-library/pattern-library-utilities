@@ -41,7 +41,7 @@ require('./').gulpDoxx(gulp,doxxOptions);
 // set up the gh-pages gulp task options
 var ghPagesOptions = {
   src: ['./docs/**/*'],
-  dependencies: ['gulp-doxx'] // run documentation generator before sending to GitHub Pages
+  dependencies: ['doxx'] // run documentation generator before sending to GitHub Pages
 
 };
 // add the `gulp ghPages` task to available gulp tasks
