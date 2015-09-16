@@ -393,6 +393,21 @@ describe('category utilities', function () {
 
     });
 
+    it('should not make changes to pattern category path without a convert data file', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+
+      patternObject.should.have.property('name', 'Base Image');
+      patternObject.should.have.property('category', 'atoms');
+
+      options.convertCategoryTitles = false;
+      var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+      patternCategoryPath.should.equal('atoms/images');
+      options.convertCategoryTitles = true;
+
+    });
+
 
     it('should get an uncategorized pattern category path', function () {
 
@@ -446,7 +461,7 @@ describe('compilers', function () {
 
       var cssOutput = utils.sassCompiler(paths, cssCompilerData);
 
-      String(cssOutput).should.containEql('.base--h1, .base--STYLED h1 {');
+      String(cssOutput).should.containEql('.base--h1,\n.base--STYLED h1 {');
 
     });
 
