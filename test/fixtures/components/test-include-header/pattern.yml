@@ -1,14 +1,14 @@
 name: Header html5 element
 description: Header html5 element with includes to test
 twig: ./test-include-header.twig
-sass: ./test-include-header.scss
-script: ./test-include-header.js
+sass:
+  - ./test-include-header-1.scss
+  - ./test-include-header-2.scss
+script:
+  - ./test-include-header-1.js
+  - ./test-include-header-2.js
 category: base
 subcategory: subcatbase23
-includes:
-  - ../../generic-elm-h2
-  - ../../test-elm-h1
-  - ../../test-elm-p
 data:
   class: header--test
   h1:
