@@ -72,26 +72,34 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
+            <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-category-path.js.html">lib/get-category-path.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
+              <li><a href="#ghPages"><i class="alert alert-success"></i><span>ghPages</span></a>
               </li>
-              <li><a href="#options"><i class="alert alert-success"></i><span>options</span></a>
+              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
               </li>
               <li><a href="#gulpGhPages"><i class="alert alert-info"></i><span>gulpGhPages</span></a>
               </li>
@@ -99,11 +107,16 @@
           </div>
         </div>
         <div class="span9">
+          <section id="ghPages">
+            <h1>ghPages</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>ghPages</span>
+            </p>
+          </section>
           <div class="description"><p>@fileOverview Uses Gulpjs to publish code to gh-pages</p><p> @author       Scott Nath</p><p> @requires  NPM:gulp-gh-pages<br /> @requires  ./lib/get-options</p> </div>
-          <pre><code class="language-javascript">'use strict';
-var gulp = require('gulp'),
-  ghPages = require('gulp-gh-pages'),
-  getOptions = require('../get-options').getOptions;</code></pre>
+          <pre><code class="language-javascript">var ghPages = require('gulp-gh-pages');
+var getOptions = require('../get-options').getOptions;</code></pre>
           <section id="getDefaultOptions">
             <h1>getDefaultOptions</h1>
             <h5 class="subheader"></h5>
@@ -112,17 +125,12 @@ var gulp = require('gulp'),
             </p>
           </section>
           <div class="description"><p>Function to get default options for an implementation of a gulp-gh-pages task</p> </div>
-          <pre><code class="language-javascript">function getDefaultOptions () {</code></pre>
-          <section id="options">
-            <h1>options</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>options</span>
-            </p>
-          </section>
-          <div class="description"><p>default options for ghPages gulp task</p> </div>
-          <pre><code class="language-javascript">var options = {
-  	config: {},
+          <pre><code class="language-javascript">var getDefaultOptions = function () {
+  'use strict';
+
+  // default options for ghPages gulp task
+  var options = {
+    config: {},
     src: ['./patternlab/public</code></pre>
           <section id="gulpGhPages">
             <h1>gulpGhPages</h1>
@@ -148,20 +156,20 @@ var gulp = require('gulp'),
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>&#39;],<br />    taskName: &#39;ghPages&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />}</p><p>/**<br />Gulp task that sends files to the gh-pages branch on github.com</p> </div>
+          <div class="description"><p>&#39;],<br />    taskName: &#39;ghPages&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />};</p><p>/**<br />Gulp task that sends files to the gh-pages branch on github.com</p> </div>
           <pre><code class="language-javascript">exports.gulpGhPages = function (gulp, projectOptions) {
+  'use strict';
+  var options = getOptions(getDefaultOptions(), projectOptions);
 
-  var options = getOptions(getDefaultOptions(),projectOptions);
-	
-	gulp.task(options.taskName, options.dependencies, function () {
+  gulp.task(options.taskName, options.dependencies, function () {
     return gulp.src(options.src)
       .pipe(ghPages(options.config));
-	});
-}</code></pre>
+  });
+};</code></pre>
         </div>
       </div>
     </div>

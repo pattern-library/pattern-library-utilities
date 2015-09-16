@@ -72,23 +72,33 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
+            <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-category-path.js.html">lib/get-category-path.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#inject"><i class="alert alert-success"></i><span>inject</span></a>
+              </li>
               <li><a href="#globInjectTask"><i class="alert alert-info"></i><span>globInjectTask</span></a>
               </li>
               <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
@@ -103,12 +113,16 @@
           </div>
         </div>
         <div class="span9">
+          <section id="inject">
+            <h1>inject</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>inject</span>
+            </p>
+          </section>
           <div class="description"><p>@fileoverview Uses Gulpjs and gulp-inject to glob files</p><p> @author       Scott Nath</p><p> @requires     NPM:gulp-inject<br /> @requires     ./lib/get-options</p> </div>
-          <pre><code class="language-javascript">'use strict';
-
-var inject = require('gulp-inject'),
-  path = require('path'),
-  getOptions = require('../get-options').getOptions;</code></pre>
+          <pre><code class="language-javascript">var inject = require('gulp-inject');
+var getOptions = require('../get-options').getOptions;</code></pre>
           <section id="globInjectTask">
             <h1>globInjectTask</h1>
             <h5 class="subheader"></h5>
@@ -116,9 +130,30 @@ var inject = require('gulp-inject'),
               <div class="label label-info radius ctx-type">function</div><span>globInjectTask()</span>
             </p>
           </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>gulp</td>
+                <td>Object</td>
+                <td>including file should inject the gulp module</td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td>object of options</td>
+              </tr>
+            </tbody>
+          </table>
           <div class="description"><p>Gulp stream functionality which performs globbing/injecting pipeline</p> </div>
-          <pre><code class="language-javascript">function globInjectTask (gulp, options) {
-
+          <pre><code class="language-javascript">function globInjectTask(gulp, options) {
+  'use strict';
   var sources = gulp.src(options.files);
 
   return gulp.src(options.src)
@@ -133,14 +168,14 @@ var inject = require('gulp-inject'),
             </p>
           </section>
           <div class="description"><p>Function to get default options for an implementation of gulp-inject</p> </div>
-          <pre><code class="language-javascript">function getDefaultOptions () {
-
+          <pre><code class="language-javascript">var getDefaultOptions = function () {
+  'use strict';
   var options = {
     config: {
       relative: true
     },
     src: './index.html', // source file with types of files to be glob-injected
-    files: [ // relative paths to files to be globbed
+    files: [// relative paths to files to be globbed
       '!./node_modules</code></pre>
           <div class="description"><p>/<em>&#39;,<br />      &#39;!./_gulp/</em>&#39;,<br />      &#39;./*</p> </div>
           <pre><code class="language-javascript">'
@@ -149,10 +184,10 @@ var inject = require('gulp-inject'),
     dest: './', // destination directory where we'll write our ammended source file
     taskName: 'file-glob-inject', // default task name
     dependencies: [] // gulp tasks which should be run before this task
-  }
+  };
 
   return options;
-}</code></pre>
+};</code></pre>
           <section id="gulpFileGlobInject">
             <h1>gulpFileGlobInject</h1>
             <h5 class="subheader"></h5>
@@ -177,19 +212,19 @@ var inject = require('gulp-inject'),
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>General gulp task to glob files</p> </div>
           <pre><code class="language-javascript">exports.gulpFileGlobInject = function (gulp, projectOptions) {
+  'use strict';
+  var options = getOptions(getDefaultOptions(), projectOptions);
 
-  var options = getOptions(getDefaultOptions(),projectOptions);
-
-  gulp.task(options.taskName, options.dependencies, function() {
+  gulp.task(options.taskName, options.dependencies, function () {
     return globInjectTask(gulp, options);
   });
-}</code></pre>
+};</code></pre>
           <section id="getDefaultScssOptions">
             <h1>getDefaultScssOptions</h1>
             <h5 class="subheader"></h5>
@@ -198,8 +233,8 @@ var inject = require('gulp-inject'),
             </p>
           </section>
           <div class="description"><p>Function to get default options for globbing scss files with gulp-inject</p> </div>
-          <pre><code class="language-javascript">function getDefaultScssOptions () {
-
+          <pre><code class="language-javascript">var getDefaultScssOptions = function () {
+  'use strict';
   var options = {
     config: {
       starttag: '// inject:{{ext}}',
@@ -211,7 +246,7 @@ var inject = require('gulp-inject'),
       }
     },
     src: './styles/style.scss',
-    files: [ // Application scss files
+    files: [// Application scss files
       '!./node_modules</code></pre>
           <div class="description"><p>/<em>&#39;,<br />      &#39;!./styles/style.scss&#39;,<br />      &#39;./</em></p> </div>
           <pre><code class="language-javascript">.scss'
@@ -219,10 +254,10 @@ var inject = require('gulp-inject'),
     dest: './styles',
     taskName: 'scss-glob-inject', // default task name
     dependencies: []
-  }
+  };
 
   return options;
-}</code></pre>
+};</code></pre>
           <section id="gulpScssGlobInject">
             <h1>gulpScssGlobInject</h1>
             <h5 class="subheader"></h5>
@@ -247,20 +282,20 @@ var inject = require('gulp-inject'),
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Gulp task to glob scss files and write css imports</p> </div>
           <pre><code class="language-javascript">exports.gulpScssGlobInject = function (gulp, projectOptions) {
+  'use strict';
+  var options = getOptions(getDefaultScssOptions(), projectOptions);
 
-  var options = getOptions(getDefaultScssOptions(),projectOptions);
-
-  gulp.task(options.taskName, options.dependencies, function() {
+  gulp.task(options.taskName, options.dependencies, function () {
     return globInjectTask(gulp, options);
   });
 
-}</code></pre>
+};</code></pre>
         </div>
       </div>
     </div>

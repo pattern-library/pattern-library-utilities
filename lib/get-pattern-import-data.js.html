@@ -80,60 +80,195 @@
             <li><a href="/pattern-library-utilities/lib/get-category-path.js.html">lib/get-category-path.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/get-pattern-import-data.js.html">lib/get-pattern-import-data.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#copy"><i class="alert alert-success"></i><span>copy</span></a>
+              <li><a href="#getPatternImportData"><i class="alert alert-info"></i><span>getPatternImportData</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="copy">
-            <h1>copy</h1>
+          <section id="getPatternImportData">
+            <h1>getPatternImportData</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>copy</span>
+              <div class="label label-info radius ctx-type">method</div><span>exports.getPatternImportData()</span>
             </p>
           </section>
-          <div class="description"><p>Module dependencies.</p> </div>
-          <pre><code class="language-javascript">var copy = require('copy-to');
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>paths</td>
+                <td>Array</td>
+                <td>path info on pattern</td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td>pattern-importer options</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Gets details on an html pattern (and its supporting files) coming from a Pattern Library-structured directory</p> </div>
+          <pre><code class="language-javascript">exports.getPatternImportData = function (paths, options) {
 
-copy(require('./get-file-paths'))
-.and(require('./get-options'))
-.and(require('./category-name-converter'))
-.and(require('./get-category-path'))
-.and(require('./get-pattern-template-name'))
-.and(require('./get-pattern-files'))
-.and(require('./pattern-importer'))
-.and(require('./get-pattern-styles'))
-.and(require('./convert-twig-include-paths'))
-.and(require('./convert-recursive-json-variables'))
-.and(require('./create-file'))
-.and(require('./convert-yaml'))
-.and(require('./compilers/css-compilers/sass-compiler'))
-.and(require('./compilers/html-compilers/twig-compiler'))
-.and(require('./gulp-tasks/angular-templatecache'))
-.and(require('./gulp-tasks/browsersync'))
-.and(require('./gulp-tasks/doxx'))
-.and(require('./gulp-tasks/file-glob-inject'))
-.and(require('./gulp-tasks/gh-pages'))
-.and(require('./gulp-tasks/patterns-import'))
-.to(module.exports);</code></pre>
+  // open the individual pattern's data file
+  var patternYml = fs.readFileSync(path.join(paths.folder, options.dataFileName), {encoding:'utf8'});
+
+  // create an object to store data about this pattern's files
+  var patternFiles = {};
+  patternFiles.data = {};
+  patternFiles.filesToWrite = [];
+  patternFiles.filesToCopy = [];
+
+  // get metadata from pattern.yml file
+  var patternObject = utility.convertYamlToObject(patternYml);
+
+  // get the pattern's category directory
+  patternFiles.patternCategoryPath = utility.getCategoryPath(patternObject, options);
+
+  // determine the pattern's template destination directory
+  patternFiles.patternTemplatePath = path.join(options.htmlTemplateDest,patternFiles.patternCategoryPath);
+
+  // determin the pattern's styles destination directory
+  patternFiles.patternScriptsPath = path.join(options.scriptsDest,patternFiles.patternCategoryPath);
+
+  // use defined template type or default to html
+  var patternTemplate = utility.getPatternTemplateName(patternObject, options);
+
+  var fileType = path.extname(patternTemplate).replace('.','');
+
+  var fileSrc = path.join(paths.folder,patternTemplate);
+
+  if(patternTemplate){
+
+    // convert twig includes IF we are switching category directory titles in our destination directory
+    if(options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesData &amp;&amp; (options.templateEngine === 'twig') &amp;&amp; (patternObject.twig)){
+      
+      var twigContent = utility.convertTwigIncludes(options,fs.readFileSync(path.join(paths.folder,patternTemplate), {encoding:'utf8'}))
+
+      // add file to our filesToWrite array
+      patternFiles.filesToWrite.push({
+        'type': 'pattern',
+        'dest': path.join(patternFiles.patternTemplatePath,paths.directory+'.twig'),
+        'contents': twigContent
+      });
+      
+    } else {
+      // no conversion, add pattern template to files-to-copy array
+      var patternFileToCopy = {
+        type: 'pattern',
+        src: path.join(paths.folder,patternTemplate),
+        dest: path.join(patternFiles.patternTemplatePath,patternTemplate)
+      }
+      patternFiles.filesToCopy.push(patternFileToCopy);
+    }
+
+    // add data file to files-to-write array
+    if(patternObject.data){
+      var patternDataFile = paths.directory + '.json';
+      var patternFileToWrite = {
+        type: 'data',
+        dest: path.join(patternFiles.patternTemplatePath,patternDataFile),
+        contents: patternObject.data
+      }
+      patternFiles.filesToWrite.push(patternFileToWrite);
+      // add the data to main patternFiles object for easy reference later
+      patternFiles.data = patternObject.data;
+    }
+
+    if(options.importStyles){
+
+      // determine style file
+      var patternStyle = utility.getPatternStyles(patternObject, options);
+
+      if(patternStyle){
+        // iterate over array of style files
+        patternStyle.forEach(function (style) {
+          if(style.type === 'sass'){
+            style.dir = 'scss';
+          } else {
+            style.dir = 'css';
+          }
+          
+          // determin the pattern's styles destination directory
+          patternFiles.patternStylesPath = path.join(options.stylesDest,style.dir,patternFiles.patternCategoryPath);
+          var patternFileToCopy = {
+            type: 'styles',
+            src: path.join(paths.folder,style.name),
+            dest: path.join(patternFiles.patternStylesPath,style.name)
+          }
+
+          // add pattern style file to files-to-copy array
+          patternFiles.filesToCopy.push(patternFileToCopy);
+        });
+      }
+
+    }
+
+    // add javascript file(s)
+    if(patternObject.script &amp;&amp; options.importScripts){
+      var scriptArray = [];
+
+      // check if list of scripts is an array; creates an array of scripts
+      if(Array.isArray(patternObject.script)){
+        patternObject.script.forEach(function (script) {
+          scriptArray.push( 
+            {
+              name: script
+            }
+          )
+        })
+      } else {
+        scriptArray.push( 
+          {
+            name: patternObject.script
+          }
+        )
+      }
+      // iterate over an array of scripts, add each one to filesToCopy
+      scriptArray.forEach(function (script) {
+        // get the relative path to the js file source
+        var jsFileSourcePath = path.join(paths.folder,script.name);
+
+        // get the relative path to the js file destination
+        var jsFileDestinationPath = path.join(patternFiles.patternScriptsPath,script.name);
+
+        // add an object about this file to the filesToWrite array
+        var jsFileToCopy = {
+          type: 'js',
+          src: jsFileSourcePath,
+          dest: jsFileDestinationPath
+        }
+        patternFiles.filesToCopy.push(jsFileToCopy);
+      });
+
+    }
+
+  }
+  return patternFiles;
+};</code></pre>
         </div>
       </div>
     </div>

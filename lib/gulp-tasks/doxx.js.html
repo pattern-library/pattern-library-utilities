@@ -72,26 +72,34 @@
         <div class="span3 bs-docs-sidebar">
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
+            <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
             <li><a href="/pattern-library-utilities/lib/create-file.js.html">lib/create-file.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-category-path.js.html">lib/get-category-path.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-file-paths.js.html">lib/get-file-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-options.js.html">lib/get-options.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
+              <li><a href="#gulpDoxx"><i class="alert alert-success"></i><span>gulpDoxx</span></a>
               </li>
-              <li><a href="#options"><i class="alert alert-success"></i><span>options</span></a>
+              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
               </li>
               <li><a href="#gulpDoxx"><i class="alert alert-info"></i><span>gulpDoxx</span></a>
               </li>
@@ -99,12 +107,17 @@
           </div>
         </div>
         <div class="span9">
+          <section id="gulpDoxx">
+            <h1>gulpDoxx</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>gulpDoxx</span>
+            </p>
+          </section>
           <div class="description"><p>@fileoverview Uses Gulpjs and Browser-Sync to create a server</p><p> @author  Scott Nath</p><p> @requires  NPM:gulp-doxx<br /> @requires  ./lib/get-options</p> </div>
-          <pre><code class="language-javascript">'use strict';
-var gulp = require('gulp'),
-  gulpDoxx = require('gulp-doxx'),
-  path = require('path'),
-  getOptions = require('../get-options').getOptions;</code></pre>
+          <pre><code class="language-javascript">var gulpDoxx = require('gulp-doxx');
+var path = require('path');
+var getOptions = require('../get-options').getOptions;</code></pre>
           <section id="getDefaultOptions">
             <h1>getDefaultOptions</h1>
             <h5 class="subheader"></h5>
@@ -113,16 +126,11 @@ var gulp = require('gulp'),
             </p>
           </section>
           <div class="description"><p>Function to get default options for an implementation of gulp-doxx</p> </div>
-          <pre><code class="language-javascript">function getDefaultOptions () {</code></pre>
-          <section id="options">
-            <h1>options</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>options</span>
-            </p>
-          </section>
-          <div class="description"><p>default options for doxx gulp task</p> </div>
-          <pre><code class="language-javascript">var options = {
+          <pre><code class="language-javascript">var getDefaultOptions = function () {
+  'use strict';
+
+  // default options for doxx gulp task
+  var options = {
 
     config: {
       title: 'Project Title',
@@ -130,7 +138,7 @@ var gulp = require('gulp'),
       template: path.join(__dirname, '../templates/doxx.template.jade')
     },
     src: ['!./node_modules</code></pre>
-          <div class="description"><p>/<em>&#39;,&#39;./</em></p> </div>
+          <div class="description"><p>/<em>&#39;, &#39;./</em></p> </div>
           <pre><code class="language-javascript">.js'],
     dest: './docs',
     dependencies: [] // gulp tasks which should be run before this task
@@ -138,7 +146,7 @@ var gulp = require('gulp'),
   };
 
   return options;
-}</code></pre>
+};</code></pre>
           <section id="gulpDoxx">
             <h1>gulpDoxx</h1>
             <h5 class="subheader"></h5>
@@ -163,16 +171,16 @@ var gulp = require('gulp'),
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Gulp task to create javascript documentation using doxx</p> </div>
           <pre><code class="language-javascript">exports.gulpDoxx = function (gulp, projectOptions) {
+  'use strict';
+  var options = getOptions(getDefaultOptions(), projectOptions);
 
-  var options = getOptions(getDefaultOptions(),projectOptions);
-
-  gulp.task('doxx', options.dependencies, function() {
+  gulp.task('doxx', options.dependencies, function () {
 
     return gulp.src(options.src)
       .pipe(gulpDoxx(options.config))
@@ -180,7 +188,7 @@ var gulp = require('gulp'),
 
   });
 
-}</code></pre>
+};</code></pre>
         </div>
       </div>
     </div>

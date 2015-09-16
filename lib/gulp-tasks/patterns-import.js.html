@@ -84,56 +84,112 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#copy"><i class="alert alert-success"></i><span>copy</span></a>
+              <li><a href="#utility"><i class="alert alert-success"></i><span>utility</span></a>
+              </li>
+              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
+              </li>
+              <li><a href="#gulpImportPatterns"><i class="alert alert-info"></i><span>gulpImportPatterns</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="copy">
-            <h1>copy</h1>
+          <section id="utility">
+            <h1>utility</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>copy</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>utility</span>
             </p>
           </section>
-          <div class="description"><p>Module dependencies.</p> </div>
-          <pre><code class="language-javascript">var copy = require('copy-to');
+          <div class="description"><p>@fileOverview<br />Uses Gulpjs to import html patterns</p><p> @author       Scott Nath</p><p> @requires     NPM:pattern-importer</p> </div>
+          <pre><code class="language-javascript">var utility = require('../utility');</code></pre>
+          <section id="getDefaultOptions">
+            <h1>getDefaultOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>getDefaultOptions()</span>
+            </p>
+          </section>
+          <div class="description"><p>Function to get default options for an implementation of patternlab-import</p> </div>
+          <pre><code class="language-javascript">var getDefaultOptions = function () {
+  'use strict';
 
-copy(require('./get-file-paths'))
-.and(require('./get-options'))
-.and(require('./category-name-converter'))
-.and(require('./get-category-path'))
-.and(require('./get-pattern-template-name'))
-.and(require('./get-pattern-files'))
-.and(require('./pattern-importer'))
-.and(require('./get-pattern-styles'))
-.and(require('./convert-twig-include-paths'))
-.and(require('./convert-recursive-json-variables'))
-.and(require('./create-file'))
-.and(require('./convert-yaml'))
-.and(require('./compilers/css-compilers/sass-compiler'))
-.and(require('./compilers/html-compilers/twig-compiler'))
-.and(require('./gulp-tasks/angular-templatecache'))
-.and(require('./gulp-tasks/browsersync'))
-.and(require('./gulp-tasks/doxx'))
-.and(require('./gulp-tasks/file-glob-inject'))
-.and(require('./gulp-tasks/gh-pages'))
-.and(require('./gulp-tasks/patterns-import'))
-.to(module.exports);</code></pre>
+  // default options for angularTemplatecache gulp task
+  var options = {
+    config: {
+      compilePatternsOnImport: false,
+      dataSource: 'pattern',
+      dataFileName: 'pattern.yml',
+      htmlTemplateDest: './source/_patterns',
+      stylesDest: './source/css/scss',
+      scriptsDest: './source/js',
+      cssCompiler: 'sass', // sass, less, stylus, none
+      templateEngine: 'twig',
+      templateEngineOptions: {
+        base: 'node_modules/pattern-library/patterns/',
+        async: false
+      },
+      templateDonut: {
+        twig: './node_modules/pattern-importer/templates/donut.twig'
+      },
+      convertCategoryTitles: true
+    },
+    src: ['./node_modules/pattern-library/patterns</code></pre>
+          <section id="gulpImportPatterns">
+            <h1>gulpImportPatterns</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.gulpImportPatterns()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>gulp</td>
+                <td>Object</td>
+                <td>gulpjs</td>
+              </tr>
+              <tr>
+                <td>projectOptions</td>
+                <td>Object</td>
+                <td>custom options</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>/pattern.yml&#39;],<br />    taskName: &#39;patterns-import&#39;, // default task name<br />    dependencies: [] // gulp tasks which should be run before this task<br />  };</p><p>  return options;<br />};</p><p>/**<br />Gulp task to import raw patterns and convert them to browser-ready html/css/js</p> </div>
+          <pre><code class="language-javascript">exports.gulpImportPatterns = function (gulp, projectOptions) {
+  'use strict';
+  var options = utility.getOptions(getDefaultOptions(), projectOptions);</code></pre>
+          <div class="description"><p>the gulp task</p> </div>
+          <pre><code class="language-javascript">gulp.task(options.taskName, options.dependencies, function () {
+
+    return gulp.src(options.src)
+      .pipe(utility.patternImporter(options.config))
+      .pipe(gulp.dest('./'));
+
+  });
+
+};</code></pre>
         </div>
       </div>
     </div>

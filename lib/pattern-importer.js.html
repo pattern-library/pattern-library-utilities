@@ -83,8 +83,8 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
@@ -97,43 +97,178 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#copy"><i class="alert alert-success"></i><span>copy</span></a>
+              <li><a href="#patternImporter"><i class="alert alert-info"></i><span>patternImporter</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="copy">
-            <h1>copy</h1>
+          <section id="patternImporter">
+            <h1>patternImporter</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>copy</span>
+              <div class="label label-info radius ctx-type">method</div><span>exports.patternImporter()</span>
             </p>
           </section>
-          <div class="description"><p>Module dependencies.</p> </div>
-          <pre><code class="language-javascript">var copy = require('copy-to');
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Imports html patterns that are following the standards at github.com/pattern-library</p> </div>
+          <pre><code class="language-javascript">exports.patternImporter = function (options) {
+  'use strict';
+  options = getOptions(options);
 
-copy(require('./get-file-paths'))
-.and(require('./get-options'))
-.and(require('./category-name-converter'))
-.and(require('./get-category-path'))
-.and(require('./get-pattern-template-name'))
-.and(require('./get-pattern-files'))
-.and(require('./pattern-importer'))
-.and(require('./get-pattern-styles'))
-.and(require('./convert-twig-include-paths'))
-.and(require('./convert-recursive-json-variables'))
-.and(require('./create-file'))
-.and(require('./convert-yaml'))
-.and(require('./compilers/css-compilers/sass-compiler'))
-.and(require('./compilers/html-compilers/twig-compiler'))
-.and(require('./gulp-tasks/angular-templatecache'))
-.and(require('./gulp-tasks/browsersync'))
-.and(require('./gulp-tasks/doxx'))
-.and(require('./gulp-tasks/file-glob-inject'))
-.and(require('./gulp-tasks/gh-pages'))
-.and(require('./gulp-tasks/patterns-import'))
-.to(module.exports);</code></pre>
+  var stream = through.obj(function (file, encoding, cb) {
+
+    if (file.isNull()) {
+      return cb();
+    }
+    if (file.isStream()) {
+      this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported'));
+      return cb();
+    }
+
+    // get path details for our pattern
+    var paths = utility.getFilePaths(file);
+
+    var patternFiles = utility.getPatternFiles(paths, options);
+
+    patternFiles.files.forEach(function (file) {
+      this.push(file);
+    }, this);
+
+    cb();
+  });
+
+  return stream;
+
+};
+
+var getOptions = function (options) {
+  'use strict';
+  var optionsDefaults = {
+    dataSource: 'pattern',
+    dataFileName: 'pattern.yml',
+    htmlTemplateDest: './source/_patterns',
+    stylesDest: './source',
+    importStyles: true,
+    scriptsDest: './source/js',
+    importScripts: true,
+    cssCompiler: 'sass', // sass, less, stylus, none
+    templateEngine: 'twig',
+    convertCategoryTitles: true, // default: true
+    convertCategoryTitlesDataFile: './node_modules/pattern-library-utilities/lib/data/pattern-lab-categories.yml',
+    uncategorizedDir: 'uncategorized'
+  };</code></pre>
+          <div class="description"><p>merge project and default options</p> </div>
+          <pre><code class="language-javascript">options = merge(optionsDefaults, options, function (a, b) {
+    return Array.isArray(a) ? b : '';
+  });
+
+  // determine data source
+  options.dataSource = options.dataSource || optionsDefaults.dataSource;
+  if (typeof options.dataSource !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataSource name must be a string');
+  }
+
+  // determine pattern datafileName name
+  options.dataFileName = options.dataFileName || optionsDefaults.dataFileName;
+  if (typeof options.dataFileName !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataFileName name must be a string');
+  }
+
+  // determine html template destination
+  options.htmlTemplateDest = options.htmlTemplateDest || optionsDefaults.htmlTemplateDest;
+  if (typeof options.htmlTemplateDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'HTML Template destination folder must be a string');
+  }
+
+  // determine styling files destination
+  options.stylesDest = options.stylesDest || optionsDefaults.stylesDest;
+  if (typeof options.stylesDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Styling files destination folder must be a string');
+  }
+
+  // should we import styles?
+  options.importStyles = options.importStyles || optionsDefaults.importStyles;
+
+  if (typeof options.importStyles !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to import styles should be true of false.');
+  }
+
+  // determine script files destination
+  options.scriptsDest = options.scriptsDest || optionsDefaults.scriptsDest;
+  if (typeof options.scriptsDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Script files destination folder must be a string');
+  }
+
+  // should we import scripts?
+  options.importScripts = options.importScripts || optionsDefaults.importScripts;
+
+  if (typeof options.importScripts !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to import scripts should be true of false.');
+  }
+
+  // determine pattern template compiling engine
+  options.templateEngine = options.templateEngine || optionsDefaults.templateEngine;
+  if (typeof options.templateEngine !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern template engine must be a string');
+  }
+
+  // should we convert the category directories when importing them?
+  options.convertCategoryTitles = options.convertCategoryTitles || optionsDefaults.convertCategoryTitles;
+
+  if (typeof options.convertCategoryTitles !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to convert category titles should be true of false.');
+  }
+
+  // determine category title-conversion data file
+  options.convertCategoryTitlesDataFile = options.convertCategoryTitlesDataFile || optionsDefaults.convertCategoryTitlesDataFile;
+  if (typeof options.convertCategoryTitlesDataFile !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'The category title-conversion data file must be a string');
+  }
+
+  // open and convert data from category title-conversion data file
+  if (options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesDataFile) {
+    var convertCategoryTitlesDataFile;
+    // attempt to open our category title-conversion data file
+    try {
+      convertCategoryTitlesDataFile = fs.readFileSync(options.convertCategoryTitlesDataFile, {encoding: 'utf8'});
+    }
+    catch (err) {
+      // If the type is not what you want, then just throw the error again.
+      throw new gutil.PluginError(PLUGIN_NAME, 'Error opening category title-conversion data file: ' + options.convertCategoryTitlesDataFile + '\n Error: ' + err);
+    }
+    options.convertCategoryTitlesData = utility.convertYamlToObject(convertCategoryTitlesDataFile);
+  }
+
+  // determine css compiler
+  options.cssCompiler = options.cssCompiler || optionsDefaults.cssCompiler;
+  if (typeof options.cssCompiler !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'CSS compiler name must be a string');
+  }
+
+  // determine directory name for patterns without a category
+  options.uncategorizedDir = options.uncategorizedDir || optionsDefaults.uncategorizedDir;
+  if (typeof options.uncategorizedDir !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataFileName name must be a string');
+  }
+
+  return options;
+};</code></pre>
         </div>
       </div>
     </div>
