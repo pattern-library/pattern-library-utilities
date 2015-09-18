@@ -5,7 +5,8 @@ var expect = chai.expect;
 var gutil = require('gulp-util');
 var File = require('vinyl');
 var es = require('event-stream');
-var fs = require('fs');
+var fs = require('fs-extra');
+var os = require('os');
 var path = require('path');
 
 var createTestFilePath = function(filePath) {
@@ -220,7 +221,7 @@ describe('pattern utilities', function () {
 
   })
 
-  describe('parsing pattern data file', function () {
+  describe('parsing pattern data file for importing', function () {
 
     it('should determine the destination for files matching defaults', function () {
 
@@ -284,6 +285,95 @@ describe('pattern utilities', function () {
     });
 
     it('should determine the destination for patterns without a default cssCompiler file', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternFiles(paths, options);
+
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/00-atoms/03-images/test-img.twig');
+      String(patternFiles.files[0].contents).should.containEql('<!-- PATTERN START - /pattern-library/patterns/base/img -->');
+      patternFiles.files[1].history[0].should.containEql('test/00-atoms/03-images/test-img.json');
+      String(patternFiles.files[1].contents).should.containEql('"src": "http://placehold.it/350x150&text=base--img",');
+
+    });
+  })
+
+
+  describe('parsing pattern data file for cloning', function () {
+
+    it('should clone an entire pattern directory to a destination', function () {
+
+      var TEST_DIR = path.join(os.tmpdir(), 'pattern-library-utilities', 'clone');
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+      var paths = utils.getFilePaths(file);
+      // get the pattern's category directory
+      var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+      // determine the cloned pattern's destination directory inside the local patterns directory
+      var clonedPatternDest = path.resolve(path.join(TEST_DIR, patternCategoryPath, paths.directory));
+      // delete the pattern destination directory, if it exists
+      fs.removeSync(clonedPatternDest);
+
+      utils.clonePattern(paths, options, TEST_DIR, function () {
+        var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+        var clonedFile = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/pattern.yml'));
+
+        var clonedPatternObject = utils.convertYamlToObject(clonedFile.contents);
+
+        clonedPatternObject.should.have.property('name', 'Heading Level 1 Test H1');
+        clonedPatternObject.should.have.property('cloneSource');
+
+      });
+
+    });
+
+    it.skip('should include the original pattern source path in the data', function () {
+
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternFiles(paths, options);
+
+      patternFiles.should.have.property('data');
+      patternFiles.data.should.have.property('patternSource');
+      patternFiles.data.patternSource.should.containEql('test/fixtures/test-elm-h1');
+
+    });
+
+
+    it.skip('should determine the destination for patterns with multiple files per type', function () {
+
+      var file = utils.createFile(createTestFilePath('components/test-include-header/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternFiles(paths, options);
+
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/base/subcatbase23/test-include-header.twig');
+      String(patternFiles.files[0].contents).should.containEql('<!-- PATTERN START - /fixtures/test-include-header -->');
+      patternFiles.files[1].history[0].should.containEql('test/base/subcatbase23/test-include-header.json');
+      String(patternFiles.files[1].contents).should.containEql('    "text": "Test Header 1",');
+      patternFiles.files[2].history[0].should.containEql('test/styles/scss/base/subcatbase23/test-include-header-1.scss');
+      patternFiles.files[3].history[0].should.containEql('test/styles/scss/base/subcatbase23/test-include-header-2.scss');
+      patternFiles.files[4].history[0].should.containEql('test/js/base/subcatbase23/test-include-header-1.js');
+      patternFiles.files[5].history[0].should.containEql('test/js/base/subcatbase23/test-include-header-2.js');
+
+    });
+
+    it.skip('should determine the destination for patterns without a default templateEngine file', function () {
+
+      var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
+      var paths = utils.getFilePaths(file);
+      var patternFiles = utils.getPatternFiles(paths, options);
+
+      patternFiles.should.have.property('files');
+      patternFiles.files[0].history[0].should.containEql('test/00-atoms/em.html');
+      String(patternFiles.files[0].contents).should.containEql('<em class="{{em.class}}">{{ em.text }}</em>\n');
+      patternFiles.files[1].history[0].should.containEql('test/00-atoms/test-em.json');
+      String(patternFiles.files[1].contents).should.containEql('"text": "Emphasized text",');
+
+    });
+
+    it.skip('should determine the destination for patterns without a default cssCompiler file', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
       var paths = utils.getFilePaths(file);
