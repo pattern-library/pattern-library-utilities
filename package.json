@@ -25,6 +25,7 @@
   "devDependencies": {
     "chai": "^2.2.0",
     "event-stream": "^3.3.0",
+    "minimist": "^1.2.0",
     "should": "^5.2.0"
   },
   "dependencies": {
