@@ -5,7 +5,8 @@ var expect = chai.expect;
 var gutil = require('gulp-util');
 var File = require('vinyl');
 var es = require('event-stream');
-var fs = require('fs');
+var fs = require('fs-extra');
+var os = require('os');
 var path = require('path');
 
 var createTestFilePath = function(filePath) {
@@ -220,7 +221,7 @@ describe('pattern utilities', function () {
 
   })
 
-  describe('parsing pattern data file', function () {
+  describe('parsing pattern data file for importing', function () {
 
     it('should determine the destination for files matching defaults', function () {
 
@@ -296,6 +297,87 @@ describe('pattern utilities', function () {
       String(patternFiles.files[1].contents).should.containEql('"src": "http://placehold.it/350x150&text=base--img",');
 
     });
+  })
+
+
+  describe('cloning a pattern', function () {
+
+    it('should clone an entire pattern directory to a destination', function (done) {
+
+      var TEST_DIR = path.join(os.tmpdir(), 'pattern-library-utilities', 'clone');
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+      var paths = utils.getFilePaths(file);
+      // get the pattern's category directory
+      var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+      // determine the cloned pattern's destination directory inside the local patterns directory
+      var clonedPatternDest = path.resolve(path.join(TEST_DIR, patternCategoryPath, paths.directory));
+      // delete the pattern destination directory, if it exists
+      fs.removeSync(clonedPatternDest);
+
+      utils.clonePattern(paths, options, TEST_DIR, function () {
+        var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+
+        var clonedTemplate = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/test-elm-h1.twig'));
+        should.exist(clonedTemplate);
+        String(clonedTemplate.contents).should.containEql('<h1 class="{{header.class}}">{{ header.text }}</h1>');
+        var clonedFile = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/pattern.yml'));
+
+        var clonedSass = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/test-elm-h1.scss'));
+        should.exist(clonedSass);
+        String(clonedSass.contents).should.containEql('$font-size: 1em;');
+
+        var clonedJs = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/test-elm-h1.js'));
+        should.exist(clonedJs);
+        String(clonedJs.contents).should.containEql('// test-elm-h1.js javascript test file');
+
+        var clonedDataFile = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/pattern.yml'));
+        should.exist(clonedDataFile);
+        String(clonedDataFile.contents).should.containEql('name: Heading Level 1 Test H1');
+
+        var clonedSubdirSass = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/subdirectory/test.scss'));
+        should.exist(clonedSubdirSass);
+        String(clonedSubdirSass.contents).should.containEql('// a test subdirectory pattern file');
+
+        // var clonedPatternObject = utils.convertYamlToObject(clonedFile.contents);
+
+        // clonedPatternObject.should.have.property('name', 'Heading Level 1 Test H1');
+        // clonedPatternObject.should.have.property('cloneSource');
+
+        done();
+      });
+    });
+
+    it('should include the original pattern source path in the data', function (done) {
+
+      var TEST_DIR = path.join(os.tmpdir(), 'pattern-library-utilities', 'clone');
+      var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+      var patternObject = utils.convertYamlToObject(file.contents);
+      var paths = utils.getFilePaths(file);
+      // get the pattern's category directory
+      var patternCategoryPath = utils.getCategoryPath(patternObject, options);
+      // determine the cloned pattern's destination directory inside the local patterns directory
+      var clonedPatternDest = path.resolve(path.join(TEST_DIR, patternCategoryPath, paths.directory));
+      // delete the pattern destination directory, if it exists
+      fs.removeSync(clonedPatternDest);
+
+      utils.clonePattern(paths, options, TEST_DIR, function () {
+
+        var clonedDataFile = utils.createFile(path.join(TEST_DIR, patternCategoryPath, 'test-elm-h1/pattern.yml'));
+        should.exist(clonedDataFile);
+        String(clonedDataFile.contents).should.containEql('name: Heading Level 1 Test H1');
+
+        var clonedPatternObject = utils.convertYamlToObject(clonedDataFile.contents);
+
+        clonedPatternObject.should.have.property('name', 'Heading Level 1 Test H1');
+        clonedPatternObject.should.have.property('cloneSource');
+        clonedPatternObject.cloneSource.should.have.property('path', 'test/fixtures/test-elm-h1');
+        clonedPatternObject.cloneSource.should.have.property('name', 'Heading Level 1 Test H1');
+
+        done();
+      });
+    });
+
   })
 
 });
