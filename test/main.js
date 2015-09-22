@@ -110,6 +110,30 @@ describe('pattern utilities', function () {
 
   });
 
+  it('should return default options', function () {
+
+    var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+    var defaultOptions = utils.getDefaultPatternUtilOptions();
+
+    defaultOptions.should.have.property('dataSource', 'pattern');
+    defaultOptions.should.have.property('dataFileName', 'pattern.yml');
+
+  });
+
+  it('should return default options', function () {
+
+    var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
+    options.dataFileName = 'spiderpig.yml' // change data filename
+    options.testChange = 'Does whatever he does';
+    var mergedOptions = utils.getPatternUtilOptions(options);
+
+    mergedOptions.should.have.property('dataFileName', 'spiderpig.yml');
+    mergedOptions.should.have.property('testChange', 'Does whatever he does');
+
+    options.dataFileName = 'pattern.yml' // return it to default
+
+  });
+
   describe('data manipulation', function (){
 
     it('should convert yaml data to an object', function () {
