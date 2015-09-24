@@ -2,8 +2,8 @@
   "extends": "eslint:recommended",
   "env": {
     "browser": true,
-    "amd": true, // added to compensate for node
-    "node": true // added to compensate for node
+    // "amd": true, // uncomment for node apps
+    // "node": true // uncomment for node apps
   },
   "globals": {
     "Drupal": true,
