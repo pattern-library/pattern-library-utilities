@@ -15,6 +15,7 @@ var createTestFilePath = function(filePath) {
 
 };
 
+var testConfigFile = './test/fixtures/config.yml';
 // create our options
 var options = {
   dataFileName: 'pattern.yml',
@@ -112,25 +113,41 @@ describe('pattern utilities', function () {
 
   it('should return default options', function () {
 
-    var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
     var defaultOptions = utils.getDefaultPatternUtilOptions();
 
     defaultOptions.should.have.property('dataSource', 'pattern');
     defaultOptions.should.have.property('dataFileName', 'pattern.yml');
+    defaultOptions.should.have.property('localPatternsDir', './patterns');
 
   });
 
-  it('should return default options', function () {
+  it('should return project options when told the configuration file', function () {
 
-    var file = utils.createFile(createTestFilePath('test-elm-h1/pattern.yml'));
-    options.dataFileName = 'spiderpig.yml' // change data filename
-    options.testChange = 'Does whatever he does';
-    var mergedOptions = utils.getPatternUtilOptions(options);
+    var mergedOptions = utils.getProjectOptions(testConfigFile);
 
-    mergedOptions.should.have.property('dataFileName', 'spiderpig.yml');
+    mergedOptions.should.have.property('dataSource', 'spiderpig');
     mergedOptions.should.have.property('testChange', 'Does whatever he does');
+    mergedOptions.should.have.property('localPatternsDir', './patterns');
 
-    options.dataFileName = 'pattern.yml' // return it to default
+  });
+
+  it('should return project options with a known CWD, but unknown configuration file', function () {
+
+    var mergedOptions = utils.getProjectOptions('','./test/fixtures');
+
+    mergedOptions.should.have.property('dataSource', 'spiderpig');
+    mergedOptions.should.have.property('testChange', 'Does whatever he does');
+    mergedOptions.should.have.property('localPatternsDir', './patterns');
+
+  });
+
+  it('should return project options with a unknown CWD and unknown configuration file', function () {
+
+    var mergedOptions = utils.getProjectOptions();
+
+    mergedOptions.should.have.property('dataSource', 'pattern');
+    mergedOptions.should.have.property('localPatternsDir', './patterns');
+    mergedOptions.should.have.property('githubrepo', 'pattern-library-utilities');
 
   });
 
