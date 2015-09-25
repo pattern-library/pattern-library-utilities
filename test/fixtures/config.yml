@@ -1,0 +1,5 @@
+# TEST configuration file
+# source for data injected into patterns
+dataSource: 'spiderpig'
+# random extra piece of data
+testChange: 'Does whatever he does'
