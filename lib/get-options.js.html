@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -99,7 +102,13 @@
             <ul class="nav nav-list bs-docs-sidenav affix-top">
               <li><a href="#merge"><i class="alert alert-success"></i><span>merge</span></a>
               </li>
-              <li><a href="#getOptions"><i class="alert alert-info"></i><span>getOptions</span></a>
+              <li><a href="#mergeOptions"><i class="alert alert-success"></i><span>mergeOptions</span></a>
+              </li>
+              <li><a href="#getDefaultPatternUtilOptions"><i class="alert alert-success"></i><span>getDefaultPatternUtilOptions</span></a>
+              </li>
+              <li><a href="#getProjectOptions"><i class="alert alert-info"></i><span>getProjectOptions</span></a>
+              </li>
+              <li><a href="#testProjectOptions"><i class="alert alert-success"></i><span>testProjectOptions</span></a>
               </li>
             </ul>
           </div>
@@ -112,13 +121,19 @@
               <div class="label label-success radius ctx-type">declaration</div><span>merge</span>
             </p>
           </section>
-          <div class="description"><p>@fileoverview Takes two options objects and merges them</p><p> @author  Scott Nath</p><p> @requires  NPM:lodash.merge</p> </div>
-          <pre><code class="language-javascript">var merge = require('lodash.merge');</code></pre>
-          <section id="getOptions">
-            <h1>getOptions</h1>
+          <div class="description"><p>@fileoverview Pattern Library Utilities options management functions</p><p> @author  Scott Nath</p><p> @requires  NPM:lodash.merge</p> </div>
+          <pre><code class="language-javascript">var merge = require('lodash.merge');
+var fs = require('fs');
+var path = require('path');
+var convertYaml = require('./convert-yaml');
+var convertJson = require('./convert-recursive-json-variables');
+var gutil = require('gulp-util');
+var PLUGIN_NAME = 'Pattern Library Utilities';</code></pre>
+          <section id="mergeOptions">
+            <h1>mergeOptions</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>exports.getOptions()</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>mergeOptions</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -131,31 +146,238 @@
             </thead>
             <tbody>
               <tr>
-                <td>appDefaultOptions</td>
+                <td>options</td>
                 <td>object</td>
                 <td>the app's default options</td>
               </tr>
               <tr>
                 <td>projectOptions</td>
                 <td>object</td>
-                <td>the project's options</td>
+                <td>the project's options </td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Returns an merged object of two options objects</p> </div>
-          <pre><code class="language-javascript">exports.getOptions = function (options, projectOptions) {
-  'use strict';</code></pre>
-          <div class="description"><p>merge project and default options</p> </div>
-          <pre><code class="language-javascript">merge(options, projectOptions, function (a, b) {
+          <pre><code class="language-javascript">var mergeOptions = exports.mergeOptions = function (options, projectOptions) {
+  'use strict';
+
+  // merge project and default options
+  merge(options, projectOptions, function (a, b) {
     return Array.isArray(a) ? b : undefined;
   });
 
-  if(!Array.isArray(options.dependencies)){
+  if (!Array.isArray(options.dependencies)) {
     options.dependencies = [String(options.dependencies)];
   }
 
   return options;
-}</code></pre>
+};</code></pre>
+          <section id="getDefaultPatternUtilOptions">
+            <h1>getDefaultPatternUtilOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>getDefaultPatternUtilOptions</span>
+            </p>
+          </section>
+          <div class="description"><p>Function to get complete default options for Pattern Library Utilities</p> </div>
+          <pre><code class="language-javascript">var getDefaultPatternUtilOptions = exports.getDefaultPatternUtilOptions = function () {
+  'use strict';
+
+  var options = {
+    dataSource: 'pattern',
+    dataFileName: 'pattern.yml',
+    localPatternsDir: './patterns',
+    htmlTemplateDest: './source/_patterns',
+    stylesDest: './source',
+    importStyles: true,
+    scriptsDest: './source/js',
+    importScripts: true,
+    cssCompiler: 'sass', // sass, less, stylus, none
+    templateEngine: 'twig',
+    convertCategoryTitles: true, // default: true
+    convertCategoryTitlesDataFile: path.join(__dirname, '../lib/data/pattern-lab-categories.yml'),
+    uncategorizedDir: 'uncategorized',
+    defaultConfigFile: './config.yml'
+  };
+
+  return options;
+};</code></pre>
+          <section id="getProjectOptions">
+            <h1>getProjectOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.getProjectOptions()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>configFile</td>
+                <td>string</td>
+                <td>configuration file path</td>
+              </tr>
+              <tr>
+                <td>cwd</td>
+                <td>string</td>
+                <td>current working directory path </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Returns project&#39;s options</p> </div>
+          <pre><code class="language-javascript">exports.getProjectOptions = function (configFile, cwd) {
+  'use strict';
+
+  var projectOptions = '';
+  var defaultConfig = getDefaultPatternUtilOptions();
+
+  // figure out the default configuration file
+  configFile = configFile || defaultConfig.defaultConfigFile;
+
+  // figure out the current working directory
+  cwd = cwd || process.cwd();
+
+  // attempt to synchronously open the yaml configuration file
+  try {
+    // open the configuration file
+    projectOptions = fs.readFileSync(path.join(cwd, configFile), {encoding: 'utf8'});
+  }
+  catch (e) {
+    console.log('No config file found', e);
+  }
+
+  if (projectOptions) {
+    // convert configuration file to JS Object
+    var configObject = convertYaml.convertYamlToObject(projectOptions);
+
+    // regex to search for variables
+    var variableRegex = /{{.*}}/g;
+
+    // convert variables
+    projectOptions = convertJson.convertRecursiveJsonVariables(configObject, variableRegex);
+  }
+
+  // merge
+  var options = mergeOptions(defaultConfig, projectOptions);
+
+  // test options and return final options object
+  return testProjectOptions(options);
+};</code></pre>
+          <section id="testProjectOptions">
+            <h1>testProjectOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>testProjectOptions</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>object</td>
+                <td>the project's options </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Function to test the final options for incorrect data types</p> </div>
+          <pre><code class="language-javascript">var testProjectOptions = exports.testProjectOptions = function (options) {
+  'use strict';
+
+  // Source for data object used to populate patterns. 'pattern' means data is coming from the dataFileName file
+  if (typeof options.dataSource !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataSource name must be a string');
+  }
+
+  // Name of directory that houses this pattern library's local patterns
+  if (typeof options.localPatternsDir !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Local patterns directory name must be a string');
+  }
+
+  // Name of file that is the source for a pattern's info and dummy content
+  if (typeof options.dataFileName !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataFileName name must be a string');
+  }
+
+
+  // Location the importer will send html template; template type determined by templateEngine
+  if (typeof options.htmlTemplateDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'HTML Template destination folder must be a string');
+  }
+
+  // determine styling files destination
+  if (typeof options.stylesDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Styling files destination folder must be a string');
+  }
+
+  // should we import styles?
+  if (typeof options.importStyles !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to import styles should be true of false.');
+  }
+
+  // determine script files destination
+  if (typeof options.scriptsDest !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Script files destination folder must be a string');
+  }
+
+  // should we import scripts?
+  if (typeof options.importScripts !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to import scripts should be true of false.');
+  }
+
+  // determine pattern template compiling engine
+  if (typeof options.templateEngine !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern template engine must be a string');
+  }
+
+  // should we convert the category directories when importing them?
+  if (typeof options.convertCategoryTitles !== 'boolean') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Choosing to convert category titles should be true of false.');
+  }
+
+  // determine category title-conversion data file
+  if (typeof options.convertCategoryTitlesDataFile !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'The category title-conversion data file must be a string');
+  }
+
+  // open and convert data from category title-conversion data file
+  if (options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesDataFile) {
+    var convertCategoryTitlesDataFile;
+    // attempt to open our category title-conversion data file
+    try {
+      convertCategoryTitlesDataFile = fs.readFileSync(options.convertCategoryTitlesDataFile, {encoding: 'utf8'});
+    }
+    catch (err) {
+      // If the type is not what you want, then just throw the error again.
+      throw new gutil.PluginError(PLUGIN_NAME, 'Error opening category title-conversion data file: ' + options.convertCategoryTitlesDataFile + '\n Error: ' + err);
+    }
+    options.convertCategoryTitlesData = convertYaml.convertYamlToObject(convertCategoryTitlesDataFile);
+  }
+
+  // determine css compiler
+  if (typeof options.cssCompiler !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'CSS compiler name must be a string');
+  }
+
+  // determine directory name for patterns without a category
+  if (typeof options.uncategorizedDir !== 'string') {
+    throw new gutil.PluginError(PLUGIN_NAME, 'Pattern dataFileName name must be a string');
+  }
+
+  return options;
+};</code></pre>
         </div>
       </div>
     </div>

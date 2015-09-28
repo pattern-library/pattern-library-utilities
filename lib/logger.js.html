@@ -84,7 +84,7 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
@@ -95,22 +95,129 @@
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#twigCompiler"><i class="alert alert-info"></i><span>twigCompiler</span></a>
+              <li><a href="#getOptions"><i class="alert alert-success"></i><span>getOptions</span></a>
+              </li>
+              <li><a href="#getLoggerOptions"><i class="alert alert-info"></i><span>getLoggerOptions</span></a>
+              </li>
+              <li><a href="#logger"><i class="alert alert-success"></i><span>logger</span></a>
+              </li>
+              <li><a href="#isTest"><i class="alert alert-info"></i><span>isTest</span></a>
+              </li>
+              <li><a href="#inspectObj"><i class="alert alert-info"></i><span>inspectObj</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="twigCompiler">
-            <h1>twigCompiler</h1>
+          <section id="getOptions">
+            <h1>getOptions</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>exports.twigCompiler()</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>getOptions</span>
+            </p>
+          </section>
+          <div class="description"><p>@file Abstracted logging properties and methods.</p><p>If for any reason, they need a different logging tool or need to be extended,<br />the changes can be made here.</p> </div>
+          <pre><code class="language-javascript">var getOptions = require('./get-options');
+var util = require('util');
+var winston = require('winston');</code></pre>
+          <section id="getLoggerOptions">
+            <h1>getLoggerOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>getLoggerOptions()</span>
+            </p>
+          </section>
+          <div class="description"><p>Get options for logging system. Checks project&#39;s options against defaults, and sets up Winston&#39;s transport requirements</p> </div>
+          <pre><code class="language-javascript">function getLoggerOptions() {
+  'use strict';
+
+  var defaultOptions = {
+    logger: {
+      level: 'info',
+      silent: false,
+      exitOnError: true,
+      logFile: ''
+    }
+  };
+
+  var loggerOptions = {};
+
+  // get the project's options
+  var projectOptions = getOptions.getProjectOptions();
+
+  // merge project options with default options; project options take precedence
+  var options = getOptions.mergeOptions(defaultOptions, projectOptions);
+
+  // check if we're unit testing
+  if (isTest()) {
+    options.logger.silent = true;
+  }
+
+  // basic transports from options
+  loggerOptions.transports = [
+    new winston.transports.Console({
+      level: options.logger.level,
+      silent: options.logger.silent,
+      colorize: true
+    })
+  ];
+
+  // check if we should add a log file
+  if (options.logger.logFile) {
+    loggerOptions.transports.push(
+      new winston.transports.File({
+        filename: options.logger.logFile,
+        level: options.logger.level
+      })
+    );
+  }
+
+  loggerOptions.exitOnError = options.logger.exitOnError;
+
+  return loggerOptions;
+
+}</code></pre>
+          <section id="logger">
+            <h1>logger</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">property</div><span>exports.logger</span>
+            </p>
+          </section>
+          <div class="description"><p>Instantiate winston</p><p>Can use metadata at any logging level</p> </div>
+          <pre><code class="language-javascript">exports.logger = new winston.Logger(getLoggerOptions());</code></pre>
+          <section id="isTest">
+            <h1>isTest</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>isTest()</span>
+            </p>
+          </section>
+          <div class="description"><p>Checks if this utility is called from a unit test.</p> </div>
+          <pre><code class="language-javascript">function isTest() {
+  'use strict';
+
+  var isTest = false;
+
+  for (var i = 0; i &lt; process.argv.length; i++) {
+    if (process.argv[i].substr(-5) === 'mocha') {
+      isTest = true;
+      break;
+    }
+  }
+
+  return isTest;
+}</code></pre>
+          <section id="inspectObj">
+            <h1>inspectObj</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.inspectObj()</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -123,27 +230,33 @@
             </thead>
             <tbody>
               <tr>
-                <td>twigOptions</td>
+                <td>obj</td>
                 <td>Object</td>
-                <td>twig configuration options</td>
+                <td>- The object to be inspected.</td>
               </tr>
               <tr>
-                <td>twigOptions.path</td>
-                <td>Object</td>
-                <td>source file to be compiled</td>
+                <td>showHidden</td>
+                <td>boolean</td>
+                <td>- Whether or not to show hidden properties.</td>
               </tr>
               <tr>
-                <td>data</td>
-                <td>Object</td>
-                <td>object of template-matching data </td>
+                <td>depth</td>
+                <td>number</td>
+                <td>- The number of recursion levels to traverse.</td>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Compiles twig templates into html</p> </div>
-          <pre><code class="language-javascript">exports.twigCompiler = function (twigOptions, data) {
+          <div class="description"><p>Recursively prints the properties of an object.</p> </div>
+          <pre><code class="language-javascript">exports.inspectObj = function (obj, showHidden, depth) {
   'use strict';
-  var tpl = twig.twig(twigOptions); // read the file with Twig
-  return tpl.render(data);
+
+  if (typeof obj === 'object') {
+    depth = depth ? depth : 2;
+    winston.info(util.inspect(obj, showHidden, depth));
+  }
+  else {
+    winston.info(obj);
+  }
 };</code></pre>
         </div>
       </div>

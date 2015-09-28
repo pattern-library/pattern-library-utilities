@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -100,8 +103,6 @@
               <li><a href="#browsersync"><i class="alert alert-success"></i><span>browsersync</span></a>
               </li>
               <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
-              </li>
-              <li><a href="#options"><i class="alert alert-success"></i><span>options</span></a>
               </li>
               <li><a href="#gulpBrowserSync"><i class="alert alert-info"></i><span>gulpBrowserSync</span></a>
               </li>
@@ -117,8 +118,8 @@
             </p>
           </section>
           <div class="description"><p>@fileoverview Uses Gulpjs and Browser-Sync to create a server</p><p> @author       Scott Nath</p><p> @requires     NPM:browser-sync<br /> @requires     ./lib/get-options</p> </div>
-          <pre><code class="language-javascript">var browsersync = require('browser-sync'),
-  getOptions = require('../get-options').getOptions;</code></pre>
+          <pre><code class="language-javascript">var browsersync = require('browser-sync');
+var mergeOptions = require('../get-options').mergeOptions;</code></pre>
           <section id="getDefaultOptions">
             <h1>getDefaultOptions</h1>
             <h5 class="subheader"></h5>
@@ -128,16 +129,10 @@
           </section>
           <div class="description"><p>Function to get default options for an implementation of browser-sync</p> </div>
           <pre><code class="language-javascript">var getDefaultOptions = function () {
-  'use strict';</code></pre>
-          <section id="options">
-            <h1>options</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>options</span>
-            </p>
-          </section>
-          <div class="description"><p>default options for pattern-importer</p> </div>
-          <pre><code class="language-javascript">var options = {
+  'use strict';
+
+  // default options for pattern-importer
+  var options = {
 
     environment: {
       config: {
@@ -156,7 +151,7 @@
   };
 
   return options;
-}</code></pre>
+};</code></pre>
           <section id="gulpBrowserSync">
             <h1>gulpBrowserSync</h1>
             <h5 class="subheader"></h5>
@@ -181,16 +176,16 @@
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Gulp task to create a server using browser-sync</p> </div>
           <pre><code class="language-javascript">exports.gulpBrowserSync = function (gulp, projectOptions) {
   'use strict';
-  var options = getOptions(getDefaultOptions(),projectOptions);</code></pre>
+  var options = mergeOptions(getDefaultOptions(), projectOptions);</code></pre>
           <div class="description"><p>the gulp task</p> </div>
-          <pre><code class="language-javascript">gulp.task('browsersync', options.dependencies, function() {
+          <pre><code class="language-javascript">gulp.task('browsersync', options.dependencies, function () {
 
     browsersync.init(null, options.environment.config, function (err, bs) {
 
@@ -198,7 +193,7 @@
 
   });
 
-}
+};
 
 exports.getBrowsersyncDefaultOptions = getDefaultOptions;</code></pre>
         </div>

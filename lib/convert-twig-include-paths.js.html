@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -136,9 +139,10 @@
             </tbody>
           </table>
           <div class="description"><p>Convert file paths in twig include statements</p> </div>
-          <pre><code class="language-javascript">exports.convertTwigIncludes = function (options,twigContent) {
+          <pre><code class="language-javascript">exports.convertTwigIncludes = function (options, twigContent) {
   'use strict';
-  if(!options.convertCategoryTitles){
+
+  if (!options.convertCategoryTitles) {
     return twigContent;
   }
 
@@ -146,6 +150,7 @@
   var twigIncludeRegex = /{%.*?include.*?%}/g;
 
   var twigIncludes;
+
   // go through twig's contents and find the includes
   while ((twigIncludes = twigIncludeRegex.exec(twigContent)) !== null) {
 
@@ -153,15 +158,15 @@
     var includePath = utility.extractTwigIncludePath(twigIncludes[0]);
 
     // get the new include path
-    var newIncludePath = utility.createNewCategoryPath(options,includePath[1]);
+    var newIncludePath = utility.createNewCategoryPath(options, includePath[1]);
 
     // replace old include path with new one
-    twigContent = twigContent.replace(includePath[1],newIncludePath);
+    twigContent = twigContent.replace(includePath[1], newIncludePath);
 
   }
 
   return twigContent;
-}</code></pre>
+};</code></pre>
           <section id="createNewCategoryPath">
             <h1>createNewCategoryPath</h1>
             <h5 class="subheader"></h5>
@@ -179,6 +184,11 @@
             </thead>
             <tbody>
               <tr>
+                <td>options</td>
+                <td>object</td>
+                <td>object of options</td>
+              </tr>
+              <tr>
                 <td>includePath</td>
                 <td>String</td>
                 <td>current category path </td>
@@ -186,18 +196,20 @@
             </tbody>
           </table>
           <div class="description"><p>Create new category path</p> </div>
-          <pre><code class="language-javascript">exports.createNewCategoryPath = function (options,includePath) {
+          <pre><code class="language-javascript">exports.createNewCategoryPath = function (options, includePath) {
   'use strict';
+
   // split up the include path
   var paths = includePath.split('/');
 
-  var newIncludePath = Array();
+  var newIncludePath = [];
+
   // convert main category
   var one = utility.categoryNameConverter(options.convertCategoryTitlesData['categories'], paths[0]);
   newIncludePath.push(one);
 
   // check paths for four parts - denotes a subcategory
-  if(paths.length === 4){
+  if (paths.length === 4) {
     var two = utility.categoryNameConverter(options.convertCategoryTitlesData.subcategories[one], paths[1]);
     newIncludePath.push(two);
   }
@@ -207,7 +219,7 @@
 
   // return the new include path
   return newIncludePath.join('/');
-}</code></pre>
+};</code></pre>
           <section id="extractTwigIncludePath">
             <h1>extractTwigIncludePath</h1>
             <h5 class="subheader"></h5>
@@ -234,10 +246,11 @@
           <div class="description"><p>Extracts the path for a file from a twig include statement using regex</p> </div>
           <pre><code class="language-javascript">exports.extractTwigIncludePath = function (twigInclude) {
   'use strict';
+
   // regex searches for single or double quotes with a .twig inside them
   var includeRegex = /['&quot;](.+\.twig)['&quot;]/;
   return includeRegex.exec(twigInclude);
-}</code></pre>
+};</code></pre>
         </div>
       </div>
     </div>

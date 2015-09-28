@@ -73,7 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -95,22 +95,30 @@
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#twigCompiler"><i class="alert alert-info"></i><span>twigCompiler</span></a>
+              <li><a href="#patternCloner"><i class="alert alert-info"></i><span>patternCloner</span></a>
+              </li>
+              <li><a href="#testIfSinglePattern"><i class="alert alert-info"></i><span>testIfSinglePattern</span></a>
+              </li>
+              <li><a href="#clonePattern"><i class="alert alert-info"></i><span>clonePattern</span></a>
+              </li>
+              <li><a href="#copyPatternDir"><i class="alert alert-info"></i><span>copyPatternDir</span></a>
+              </li>
+              <li><a href="#addCloneSource"><i class="alert alert-info"></i><span>addCloneSource</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="twigCompiler">
-            <h1>twigCompiler</h1>
+          <section id="patternCloner">
+            <h1>patternCloner</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>exports.twigCompiler()</span>
+              <div class="label label-info radius ctx-type">method</div><span>exports.patternCloner()</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -123,27 +131,287 @@
             </thead>
             <tbody>
               <tr>
-                <td>twigOptions</td>
+                <td>options</td>
                 <td>Object</td>
-                <td>twig configuration options</td>
-              </tr>
-              <tr>
-                <td>twigOptions.path</td>
-                <td>Object</td>
-                <td>source file to be compiled</td>
-              </tr>
-              <tr>
-                <td>data</td>
-                <td>Object</td>
-                <td>object of template-matching data </td>
+                <td></td>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Compiles twig templates into html</p> </div>
-          <pre><code class="language-javascript">exports.twigCompiler = function (twigOptions, data) {
+          <div class="description"><p>Takes a stream of patterns to-be-cloned</p> </div>
+          <pre><code class="language-javascript">exports.patternCloner = function (options) {
   'use strict';
-  var tpl = twig.twig(twigOptions); // read the file with Twig
-  return tpl.render(data);
+
+  // check options
+  options = options || utility.getProjectOptions();
+
+  var stream = through.obj(function (file, encoding, cb) {
+
+    if (file.isNull()) {
+      return cb();
+    }
+    if (file.isStream()) {
+      log.error('error', new PluginError(PLUGIN_NAME, 'Streams not supported'));
+      return cb();
+    }
+
+    // get path details for our pattern
+    var paths = utility.getFilePaths(file);
+
+    utility.clonePattern(paths, options, options.localPatternsDir, function () {});
+
+    cb();
+  });
+
+  return stream;
+
+};</code></pre>
+          <section id="testIfSinglePattern">
+            <h1>testIfSinglePattern</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.testIfSinglePattern()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td>application options</td>
+              </tr>
+              <tr>
+                <td>patternPath</td>
+                <td>String</td>
+                <td>path to pattern; accepts pattern directory and patternDataFile </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Test that a string returns an existing pattern</p> </div>
+          <pre><code class="language-javascript">exports.testIfSinglePattern = function (patternPath, options) {
+  'use strict';
+
+  // check options
+  options = options || utility.getProjectOptions();
+
+  if (typeof patternPath !== 'string') {
+    log.error('Pattern path must be a string');
+    return;
+  }
+
+  // check that the patternPath ends with the dataFileName (pattern.yml); if not, add it to the path
+  if (path.basename(patternPath) !== options.dataFileName) {
+    patternPath = path.join(patternPath, options.dataFileName);
+  }
+
+  // test for existence of patternDataFile
+  try {
+    fs.statSync(patternPath);
+  }
+  catch (e) {
+    log.error(options.dataFileName + ' does not exist at ' + patternPath);
+    log.error(e);
+    return;
+  }
+
+  return patternPath;
+};</code></pre>
+          <section id="clonePattern">
+            <h1>clonePattern</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.clonePattern()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>paths</td>
+                <td>Array</td>
+                <td>path info on original pattern</td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td>pattern-importer options</td>
+              </tr>
+              <tr>
+                <td>destDir</td>
+                <td>String</td>
+                <td>the top of destination directory for the cloned pattern</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Clone a pattern&#39;s entire directory to destination directory</p> </div>
+          <pre><code class="language-javascript">exports.clonePattern = function (paths, options, destDir, cb) {
+  'use strict';
+
+  // make sure the destination directory is a string and exists
+  destDir = destDir || './patterns';
+  if (typeof destDir !== 'string') {
+    log.error('Destination directory must be a string.');
+    throw new Error();
+  }
+
+  // open the pattern's data file
+  var patternYml = fs.readFileSync(path.join(paths.folder, options.dataFileName), {encoding: 'utf8'});
+
+  // get metadata from pattern.yml file
+  var patternObject = utility.convertYamlToObject(patternYml);
+
+  // get the pattern's category directory
+  var patternCategoryPath = utility.getCategoryPath(patternObject, options);
+
+  // determine the cloned pattern's destination directory inside the local patterns directory
+  var clonedPatternDest = path.resolve(path.join(destDir, patternCategoryPath, paths.directory));
+
+  // if the destination directory doesn't exist, just copy the pattern
+  try {
+    fs.statSync(clonedPatternDest);
+  }
+  catch (e) {
+    copyPatternDir(paths, clonedPatternDest, options, cb);
+    return;
+  }
+
+  // check if overwrite is allowed
+  if (!options.config.overwrite) {
+    log.info('A pattern directory for ' + paths.directory + ' already exists in ' + clonedPatternDest);
+    return;
+  }
+
+  // copy the pattern
+  copyPatternDir(paths, clonedPatternDest, options, cb);
+
+};</code></pre>
+          <section id="copyPatternDir">
+            <h1>copyPatternDir</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>copyPatternDir()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>paths</td>
+                <td>String</td>
+                <td>pattern source</td>
+              </tr>
+              <tr>
+                <td>dest</td>
+                <td>String</td>
+                <td>destination for pattern</td>
+              </tr>
+              <tr>
+                <td>options</td>
+                <td>Object</td>
+                <td>project options</td>
+              </tr>
+              <tr>
+                <td>cb</td>
+                <td>Func</td>
+                <td>callback function</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Copy the pattern directory and adjust it&#39;s data file</p> </div>
+          <pre><code class="language-javascript">var copyPatternDir = function (paths, dest, options, cb) {
+  'use strict';
+
+  // copy the entire pattern directory, as-is, to our destination directory
+  fs.copy(String(paths.folder), dest, function (err) {
+    if (err &amp;&amp; err.code !== 'ENOENT') {return log.error(err); }
+
+    // success in cloning the directory
+    log.info(paths.directory + ' pattern cloned into ' + dest);
+
+    // create the cloned pattern's data file's path
+    var clonedPatternYmlFile = paths.relative;
+
+    // open the cloned pattern's data file
+    var clonedPatternYml = fs.readFileSync(clonedPatternYmlFile, {encoding: 'utf8'});
+
+    // get metadata from the data file
+    var clonedPatternObject = utility.convertYamlToObject(clonedPatternYml);
+
+    // new file contents
+    var newDataFileContents = utility.convertObjectToYaml(addCloneSource(paths, clonedPatternObject));
+
+    // overwrite the cloned pattern's data file with the adjusted contents
+    fs.writeFile(clonedPatternYmlFile, newDataFileContents, function (err) {
+      if (err) { throw err; }
+      log.info(clonedPatternYmlFile + ' cloned source added to ' + options.dataFileName);
+      cb();
+    });
+  });
+};</code></pre>
+          <section id="addCloneSource">
+            <h1>addCloneSource</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>addCloneSource()</span>
+            </p>
+          </section>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th style="width:20%">@param</th>
+                <th style="width:20%">Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>paths</td>
+                <td>Array</td>
+                <td>path info on original pattern</td>
+              </tr>
+              <tr>
+                <td>patternObject</td>
+                <td>Object</td>
+                <td>data object from the pattern data file </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="description"><p>Add data about a cloned pattern&#39;s source</p> </div>
+          <pre><code class="language-javascript">var addCloneSource = function (paths, patternObject) {
+  'use strict';
+
+  // copy data object and remove from patternObject - this is for proper ordering of the pattern.yml file
+  var patternData = patternObject.data;
+  delete patternObject.data;
+
+  // add this cloned pattern's source
+  patternObject.cloneSource = {
+    path: paths.folder,
+    name: patternObject.name
+  };
+
+  // return the data object so it is the last property in the final file
+  patternObject.data = patternData;
+
+  return patternObject;
 };</code></pre>
         </div>
       </div>

@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -116,7 +119,7 @@
           </section>
           <div class="description"><p>@fileOverview Uses Gulpjs to publish code to gh-pages</p><p> @author       Scott Nath</p><p> @requires  NPM:gulp-gh-pages<br /> @requires  ./lib/get-options</p> </div>
           <pre><code class="language-javascript">var ghPages = require('gulp-gh-pages');
-var getOptions = require('../get-options').getOptions;</code></pre>
+var mergeOptions = require('../get-options').mergeOptions;</code></pre>
           <section id="getDefaultOptions">
             <h1>getDefaultOptions</h1>
             <h5 class="subheader"></h5>
@@ -163,7 +166,7 @@ var getOptions = require('../get-options').getOptions;</code></pre>
           <div class="description"><p>&#39;],<br />    taskName: &#39;ghPages&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />};</p><p>/**<br />Gulp task that sends files to the gh-pages branch on github.com</p> </div>
           <pre><code class="language-javascript">exports.gulpGhPages = function (gulp, projectOptions) {
   'use strict';
-  var options = getOptions(getDefaultOptions(), projectOptions);
+  var options = mergeOptions(getDefaultOptions(), projectOptions);
 
   gulp.task(options.taskName, options.dependencies, function () {
     return gulp.src(options.src)

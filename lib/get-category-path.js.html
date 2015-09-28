@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -97,6 +100,8 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
+              <li><a href="#path"><i class="alert alert-success"></i><span>path</span></a>
+              </li>
               <li><a href="#getCategoryPath"><i class="alert alert-info"></i><span>getCategoryPath</span></a>
               </li>
               <li><a href="#categoryPathPlain"><i class="alert alert-info"></i><span>categoryPathPlain</span></a>
@@ -107,6 +112,16 @@
           </div>
         </div>
         <div class="span9">
+          <section id="path">
+            <h1>path</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-success radius ctx-type">declaration</div><span>path</span>
+            </p>
+          </section>
+          <div class="description"><p>@fileOverview<br />Determines the category path structure</p><p> @author       Scott Nath</p> </div>
+          <pre><code class="language-javascript">var path = require('path');
+var utility = require('./utility');</code></pre>
           <section id="getCategoryPath">
             <h1>getCategoryPath</h1>
             <h5 class="subheader"></h5>
@@ -138,32 +153,31 @@
           <div class="description"><p>Determines the category directory structure from the pattern&#39;s data</p> </div>
           <pre><code class="language-javascript">exports.getCategoryPath = function (patternObject, options) {
   'use strict';
-  var categoryPath = '',
-    subcategoryPath = '',
-    categoryObject = '';
+
+  var categoryObject = '';
 
   // grab the conversion data object
-  if(options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesData){
+  if (options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesData) {
     categoryObject = options.convertCategoryTitlesData;
   }
 
   // make sure we're dealing with an object
-  var patternObject = patternObject || {};
+  patternObject = patternObject || {};
 
   // return the uncategorized directory name if no category in the pattern's object
-  if(!patternObject.category){
+  if (!patternObject.category) {
     return options.uncategorizedDir;
   }
 
   // check if we have a categoryObject
-  switch(categoryObject) {
-    case '':
-      return categoryPathPlain(patternObject);
-      break;
-    default:
-      return categoryPathConverted(categoryObject, patternObject);
+  if (categoryObject) {
+    return categoryPathConverted(categoryObject, patternObject);
   }
-}</code></pre>
+  else {
+    return categoryPathPlain(patternObject);
+  }
+
+};</code></pre>
           <section id="categoryPathPlain">
             <h1>categoryPathPlain</h1>
             <h5 class="subheader"></h5>
@@ -188,13 +202,14 @@
             </tbody>
           </table>
           <div class="description"><p>Determines the category directory structure without any conversion</p> </div>
-          <pre><code class="language-javascript">function categoryPathPlain (patternObject) {
+          <pre><code class="language-javascript">function categoryPathPlain(patternObject) {
   'use strict';
 
   // check for subcategory
-  if(patternObject.subcategory){
+  if (patternObject.subcategory) {
     return path.join(patternObject.category, patternObject.subcategory);
-  } else {
+  }
+  else {
     return patternObject.category;
   }
 }</code></pre>
@@ -227,17 +242,18 @@
             </tbody>
           </table>
           <div class="description"><p>Determines the category directory structure by converting names according to a category object</p> </div>
-          <pre><code class="language-javascript">function categoryPathConverted (categoryObject, patternObject) {
+          <pre><code class="language-javascript">function categoryPathConverted(categoryObject, patternObject) {
   'use strict';
 
   // convert our category path using the categoryObject
   var categoryPath = utility.categoryNameConverter(categoryObject.categories, patternObject.category);
 
   // check for subcategory
-  if(patternObject.subcategory){
+  if (patternObject.subcategory) {
     var subcategoryPath = utility.categoryNameConverter(categoryObject.subcategories[categoryPath], patternObject.subcategory);
     return path.join(categoryPath, subcategoryPath);
-  } else {
+  }
+  else {
     return categoryPath;
   }
 }</code></pre>

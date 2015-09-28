@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -136,14 +139,16 @@
           <div class="description"><p>Gets name and type of pattern style file. Defaults to .css file (if it exists)</p> </div>
           <pre><code class="language-javascript">exports.getPatternStyles = function (patternObject, options) {
   'use strict';
-  if(patternObject[options.cssCompiler]) {
+  if (patternObject[options.cssCompiler]) {
     return createStyleArray(patternObject[options.cssCompiler], options.cssCompiler);
-  } else if(patternObject.css) {
+  }
+  else if (patternObject.css) {
     return createStyleArray(patternObject.css, 'css');
-  } else {
+  }
+  else {
     return false;
   }
-}</code></pre>
+};</code></pre>
           <section id="createStyleArray">
             <h1>createStyleArray</h1>
             <h5 class="subheader"></h5>
@@ -173,25 +178,26 @@
             </tbody>
           </table>
           <div class="description"><p>Checks if styles is an array; creates an array of style files and types</p> </div>
-          <pre><code class="language-javascript">function createStyleArray (styles, type) {
+          <pre><code class="language-javascript">function createStyleArray(styles, type) {
   'use strict';
   var styleArray = [];
-  if(Array.isArray(styles)){
+  if (Array.isArray(styles)) {
     styles.forEach(function (style) {
       styleArray.push(
         {
           name: style,
           type: type
         }
-      )
-    })
-  } else {
+      );
+    });
+  }
+  else {
     styleArray.push(
       {
         name: styles,
         type: type
       }
-    )
+    );
   }
   return styleArray;
 }</code></pre>

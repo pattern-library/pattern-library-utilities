@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -97,11 +100,9 @@
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#gulp"><i class="alert alert-success"></i><span>gulp</span></a>
+              <li><a href="#angularTemplatecache"><i class="alert alert-success"></i><span>angularTemplatecache</span></a>
               </li>
               <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
-              </li>
-              <li><a href="#options"><i class="alert alert-success"></i><span>options</span></a>
               </li>
               <li><a href="#gulpAngularTemplatecache"><i class="alert alert-info"></i><span>gulpAngularTemplatecache</span></a>
               </li>
@@ -109,18 +110,16 @@
           </div>
         </div>
         <div class="span9">
-          <section id="gulp">
-            <h1>gulp</h1>
+          <section id="angularTemplatecache">
+            <h1>angularTemplatecache</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>gulp</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>angularTemplatecache</span>
             </p>
           </section>
           <div class="description"><p>@fileoverview Uses Gulpjs and angular-templatecache to convert html to javascript templates</p><p> @author  Scott Nath</p><p> @requires  NPM:angular-templatecache<br /> @requires  ./lib/get-options</p> </div>
-          <pre><code class="language-javascript">var gulp = require('gulp'),
-  angularTemplatecache = require('gulp-angular-templatecache'),
-  path = require('path'),
-  getOptions = require('../get-options').getOptions;</code></pre>
+          <pre><code class="language-javascript">var angularTemplatecache = require('gulp-angular-templatecache');
+var mergeOptions = require('../get-options').mergeOptions;</code></pre>
           <section id="getDefaultOptions">
             <h1>getDefaultOptions</h1>
             <h5 class="subheader"></h5>
@@ -130,19 +129,13 @@
           </section>
           <div class="description"><p>Function to get default options for an implementation of gulp-angular-templatecache</p> </div>
           <pre><code class="language-javascript">var getDefaultOptions = function () {
-  'use strict';</code></pre>
-          <section id="options">
-            <h1>options</h1>
-            <h5 class="subheader"></h5>
-            <p>
-              <div class="label label-success radius ctx-type">declaration</div><span>options</span>
-            </p>
-          </section>
-          <div class="description"><p>default options for angularTemplatecache gulp task</p> </div>
-          <pre><code class="language-javascript">var options = {
+  'use strict';
+
+  // default options for angularTemplatecache gulp task
+  var options = {
     config: {
-      module:'templatescache',
-      standalone:true
+      module: 'templatescache',
+      standalone: true
     },
     src: ['./bower_components/pattern-library/patterns</code></pre>
           <section id="gulpAngularTemplatecache">
@@ -169,22 +162,22 @@
               <tr>
                 <td>projectOptions</td>
                 <td>Object</td>
-                <td>object of options </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>/*.html&#39;],<br />    dest: &#39;./scripts&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />}</p><p>/**<br />Gulp task that uses gulp-angular-templatecache to create $templateCache.put javascript templates from app html files</p> </div>
+          <div class="description"><p>/*.html&#39;],<br />    dest: &#39;./scripts&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />};</p><p>/**<br />Gulp task that uses gulp-angular-templatecache to create $templateCache.put javascript templates from app html files</p> </div>
           <pre><code class="language-javascript">exports.gulpAngularTemplatecache = function (gulp, projectOptions) {
   'use strict';
-  var options = getOptions(getDefaultOptions(),projectOptions);
+  var options = mergeOptions(getDefaultOptions(), projectOptions);
 
-  gulp.task('angularTemplatecache', options.dependencies, function(){
+  gulp.task('angularTemplatecache', options.dependencies, function () {
 
     return gulp.src(options.src)
       .pipe(angularTemplatecache(options.config))
       .pipe(gulp.dest(options.dest));
   });
-}</code></pre>
+};</code></pre>
         </div>
       </div>
     </div>

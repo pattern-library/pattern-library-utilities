@@ -89,28 +89,87 @@
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
-            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
+            <li class="active"><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/patterns-import.js.html">lib/gulp-tasks/patterns-import.js</a></li>
             <li><a href="/pattern-library-utilities/lib/compilers/css-compilers/sass-compiler.js.html">lib/compilers/css-compilers/sass-compiler.js</a></li>
-            <li class="active"><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/compilers/html-compilers/twig-compiler.js.html">lib/compilers/html-compilers/twig-compiler.js</a></li>
             <li><a href="/pattern-library-utilities/README.md.html">README.md</a></li>
           </ul>
           <div class="scrollspy">
             <ul class="nav nav-list bs-docs-sidenav affix-top">
-              <li><a href="#twigCompiler"><i class="alert alert-info"></i><span>twigCompiler</span></a>
+              <li><a href="#utility"><i class="alert alert-success"></i><span>utility</span></a>
+              </li>
+              <li><a href="#getDefaultOptions"><i class="alert alert-info"></i><span>getDefaultOptions</span></a>
+              </li>
+              <li><a href="#gulpClonePattern"><i class="alert alert-info"></i><span>gulpClonePattern</span></a>
               </li>
             </ul>
           </div>
         </div>
         <div class="span9">
-          <section id="twigCompiler">
-            <h1>twigCompiler</h1>
+          <section id="utility">
+            <h1>utility</h1>
             <h5 class="subheader"></h5>
             <p>
-              <div class="label label-info radius ctx-type">method</div><span>exports.twigCompiler()</span>
+              <div class="label label-success radius ctx-type">declaration</div><span>utility</span>
+            </p>
+          </section>
+          <div class="description"><p>@fileOverview Uses Gulpjs to clone a pattern</p><p> @author       Scott Nath</p><p> @requires  ./lib/utility<br /> @requires  ./lib/clone-pattern<br /> @requires  ./lib/get-options</p> </div>
+          <pre><code class="language-javascript">var utility = require('../utility');
+var mergeOptions = require('../get-options').mergeOptions;
+var minimist = require('minimist');
+var log = require('../logger').logger;</code></pre>
+          <section id="getDefaultOptions">
+            <h1>getDefaultOptions</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">function</div><span>getDefaultOptions()</span>
+            </p>
+          </section>
+          <div class="description"><p>Function to get default options for an implementation of a clone-pattern task</p> </div>
+          <pre><code class="language-javascript">var getDefaultOptions = function () {
+  'use strict';
+
+  // default options for clone-pattern gulp task
+  var options = {
+    config: {}, // empty, but a placeholder for later
+    taskName: 'clone-pattern',
+    dependencies: [] // gulp tasks which should be run before this task
+
+  };
+
+  return options;
+};
+
+var checkForClassArguments = function (args) {
+  'use strict';
+
+  if (!args.pattern) {
+    log.warn('To clone, you must include a pattern flag. example: &quot;--pattern /path/to/pattern/directory&quot;');
+    return false;
+  }
+
+  if (typeof args.pattern !== 'string') {
+    log.warn('The path to the pattern-to-clone must be a string.');
+    return false;
+  }
+
+  if (args.overwrite &amp;&amp; ((typeof args.overwrite !== 'string') || (args.overwrite !== 'YES'))) {
+    log.warn('You must type YES in all caps to overwrite your local pattern');
+    return false;
+  }
+
+  return args;
+
+};</code></pre>
+          <section id="gulpClonePattern">
+            <h1>gulpClonePattern</h1>
+            <h5 class="subheader"></h5>
+            <p>
+              <div class="label label-info radius ctx-type">method</div><span>exports.gulpClonePattern()</span>
             </p>
           </section>
           <table class="table table-bordered table-striped">
@@ -123,27 +182,61 @@
             </thead>
             <tbody>
               <tr>
-                <td>twigOptions</td>
+                <td>gulp</td>
                 <td>Object</td>
-                <td>twig configuration options</td>
+                <td>including file should inject the gulp module</td>
               </tr>
               <tr>
-                <td>twigOptions.path</td>
+                <td>projectOptions</td>
                 <td>Object</td>
-                <td>source file to be compiled</td>
-              </tr>
-              <tr>
-                <td>data</td>
-                <td>Object</td>
-                <td>object of template-matching data </td>
+                <td>object of options</td>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Compiles twig templates into html</p> </div>
-          <pre><code class="language-javascript">exports.twigCompiler = function (twigOptions, data) {
+          <div class="description"><p>Gulp task that clones a pattern-library pattern</p> </div>
+          <pre><code class="language-javascript">exports.gulpClonePattern = function (gulp, projectOptions) {
   'use strict';
-  var tpl = twig.twig(twigOptions); // read the file with Twig
-  return tpl.render(data);
+
+  var patternDataFile;
+
+  projectOptions = mergeOptions(getDefaultOptions(), projectOptions);
+
+  var options = utility.getProjectOptions();
+
+  options = mergeOptions(options, projectOptions);
+
+  gulp.task(options.taskName, options.dependencies, function () {
+
+    var args = checkForClassArguments(minimist(process.argv.slice(2)));
+
+    if (!args) {
+      log.error('Exiting without cloning.');
+      return;
+    }
+
+    // single pattern cloning
+    if (args.pattern) {
+      patternDataFile = utility.testIfSinglePattern(args.pattern, options);
+
+      if (!patternDataFile) {
+        log.error('The pattern you want to clone does not exist. Exiting without cloning.');
+        return;
+      }
+    }
+
+    // overwrite option
+    if (args.overwrite) {
+      options.config = {
+        overwrite: true
+      };
+    }
+
+
+    return gulp.src(patternDataFile)
+    .pipe(utility.patternCloner(options));
+
+  });
+
 };</code></pre>
         </div>
       </div>

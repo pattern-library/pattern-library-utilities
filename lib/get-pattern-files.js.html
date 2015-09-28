@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li class="active"><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -134,8 +137,9 @@
           <div class="description"><p>Gets details on an html pattern (and its supporting files) coming from a Pattern Library-structured directory</p> </div>
           <pre><code class="language-javascript">exports.getPatternFiles = function (paths, options) {
   'use strict';
+
   // open the individual pattern's data file
-  var patternYml = fs.readFileSync(path.join(paths.folder, options.dataFileName), {encoding:'utf8'});
+  var patternYml = fs.readFileSync(path.join(paths.folder, options.dataFileName), {encoding: 'utf8'});
 
   // create an object to store data about this pattern's files
   var patternFiles = {};
@@ -148,56 +152,53 @@
   patternFiles.patternCategoryPath = utility.getCategoryPath(patternObject, options);
 
   // determine the pattern's template destination directory
-  patternFiles.patternTemplatePath = path.resolve(path.join(options.htmlTemplateDest,patternFiles.patternCategoryPath));
+  patternFiles.patternTemplatePath = path.resolve(path.join(options.htmlTemplateDest, patternFiles.patternCategoryPath));
 
-  // determin the pattern's styles destination directory
-  patternFiles.patternScriptsPath = path.join(options.scriptsDest,patternFiles.patternCategoryPath);
+  // determine the pattern's javascripts' destination directory
+  patternFiles.patternScriptsPath = path.join(options.scriptsDest, patternFiles.patternCategoryPath);
 
   // use defined template type or default to html
   var patternTemplate = utility.getPatternTemplateName(patternObject, options);
 
-  var fileType = path.extname(patternTemplate).replace('.','');
-
-  var fileSrc = path.join(paths.folder,patternTemplate);
-
   patternFiles.files = [];
 
-  if(patternTemplate){
+  if (patternTemplate) {
 
+    var patternTemplateFileDest;
+    var patternTemplateFile;
     // convert twig includes IF we are switching category directory titles in our destination directory
-    if(options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesData &amp;&amp; (options.templateEngine === 'twig') &amp;&amp; (patternObject.twig)){
+    if (options.convertCategoryTitles &amp;&amp; options.convertCategoryTitlesData &amp;&amp; (options.templateEngine === 'twig') &amp;&amp; (patternObject.twig)) {
 
       // convert the include statements in our twig files
-      var twigContent = utility.convertTwigIncludes(options,fs.readFileSync(path.join(paths.folder,patternTemplate), {encoding:'utf8'}))
+      var twigContent = utility.convertTwigIncludes(options, fs.readFileSync(path.join(paths.folder, patternTemplate), {encoding: 'utf8'}));
 
       // our html template file destination
-      var fileDest = path.join(patternFiles.patternTemplatePath,paths.directory + '.twig');
+      patternTemplateFileDest = path.join(patternFiles.patternTemplatePath, paths.directory + '.twig');
 
       // create the vinyl version
-      var file = utility.createNewFile(fileDest,path.resolve('./'),'',new Buffer(twigContent));
+      patternTemplateFile = utility.createNewFile(patternTemplateFileDest, path.resolve('./'), '', new Buffer(twigContent));
 
-      // push to our files array
-      patternFiles.files.push(file);
-
-    } else {
+    }
+    else {
 
       // no conversion
 
       // template file source
-      var fileSrc = path.join(paths.folder,patternTemplate);
+      var fileSrc = path.join(paths.folder, patternTemplate);
 
       // template file destination
-      var fileDest = path.join(patternFiles.patternTemplatePath,patternTemplate);
+      patternTemplateFileDest = path.join(patternFiles.patternTemplatePath, patternTemplate);
 
       // create the vinyl version
-      var file = utility.createFile(fileSrc,path.resolve('./'),'','',fileDest);
+      patternTemplateFile = utility.createFile(fileSrc, path.resolve('./'), '', '', patternTemplateFileDest);
 
-      // push to our files array
-      patternFiles.files.push(file);
     }
 
+    // push pattern template file to our files array
+    patternFiles.files.push(patternTemplateFile);
+
     // add data file to files-to-write array
-    if(patternObject.data){
+    if (patternObject.data) {
 
       // add the data to main patternFiles object for easy reference later
       patternFiles.data = patternObject.data;
@@ -205,41 +206,47 @@
       // add the pattern source path
       patternFiles.data.patternSource = paths.folder;
 
+      // if the pattern is a clone, add that to data object
+      if (patternObject.cloneSource) {
+        patternFiles.data.cloneSource = patternObject.cloneSource;
+      }
+
       // JSON data file destination
-      var fileDest = path.join(patternFiles.patternTemplatePath,paths.directory + '.json');
+      var fileDest = path.join(patternFiles.patternTemplatePath, paths.directory + '.json');
 
       // create the vinyl version
-      var file = utility.createNewFile(fileDest,path.resolve('./'),'',new Buffer(JSON.stringify(patternObject.data,null,2)));
+      var file = utility.createNewFile(fileDest, path.resolve('./'), '', new Buffer(JSON.stringify(patternObject.data, null, 2)));
 
       // push to our files array
       patternFiles.files.push(file);
     }
 
-    if(options.importStyles){
+    if (options.importStyles) {
 
       // determine style file
       var patternStyle = utility.getPatternStyles(patternObject, options);
 
-      if(patternStyle){
+      if (patternStyle) {
         // iterate over array of style files
         patternStyle.forEach(function (style) {
-          if(style.type === 'sass'){
+          if (style.type === 'sass') {
             style.dir = 'scss';
-          } else {
+          }
+          else {
             style.dir = 'css';
           }
 
           // // determin the pattern's styles destination directory
-          patternFiles.patternStylesPath = path.join(options.stylesDest,style.dir,patternFiles.patternCategoryPath);
+          patternFiles.patternStylesPath = path.join(options.stylesDest, style.dir, patternFiles.patternCategoryPath);
 
           // source style file
-          var fileSrc = path.join(paths.folder,style.name);
+          var fileSrc = path.join(paths.folder, style.name);
 
           // destination style file
-          var fileDest = path.join(patternFiles.patternStylesPath,style.name);
+          var fileDest = path.join(patternFiles.patternStylesPath, style.name);
 
           // create the vinyl version
-          var file = utility.createFile(fileSrc,path.resolve('./'),'','',fileDest);
+          var file = utility.createFile(fileSrc, path.resolve('./'), '', '', fileDest);
 
           // push to our files array
           patternFiles.files.push(file);
@@ -249,36 +256,37 @@
     }
 
     // add javascript file(s)
-    if(patternObject.script &amp;&amp; options.importScripts){
+    if (patternObject.script &amp;&amp; options.importScripts) {
       var scriptArray = [];
 
       // check if list of scripts is an array; creates an array of scripts
-      if(Array.isArray(patternObject.script)){
+      if (Array.isArray(patternObject.script)) {
         patternObject.script.forEach(function (script) {
           scriptArray.push(
             {
               name: script
             }
-          )
-        })
-      } else {
+          );
+        });
+      }
+      else {
         scriptArray.push(
           {
             name: patternObject.script
           }
-        )
+        );
       }
       // iterate over an array of scripts
       scriptArray.forEach(function (script) {
 
         // get the relative path to the js file source
-        var fileSrc = path.join(paths.folder,script.name);
+        var fileSrc = path.join(paths.folder, script.name);
 
         // get the relative path to the js file destination
-        var fileDest = path.join(patternFiles.patternScriptsPath,script.name);
+        var fileDest = path.join(patternFiles.patternScriptsPath, script.name);
 
         // create the vinyl version
-        var file = utility.createFile(fileSrc,path.resolve('./'),'','',fileDest);
+        var file = utility.createFile(fileSrc, path.resolve('./'), '', '', fileDest);
 
         // push to our files array
         patternFiles.files.push(file);

@@ -73,6 +73,7 @@
           <ul class="nav nav-list bs-docs-sidenav affix-top">
             <li><a href="/pattern-library-utilities/index.html">Main</a></li>
             <li><a href="/pattern-library-utilities/lib/category-name-converter.js.html">lib/category-name-converter.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/clone-pattern.js.html">lib/clone-pattern.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-recursive-json-variables.js.html">lib/convert-recursive-json-variables.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-twig-include-paths.js.html">lib/convert-twig-include-paths.js</a></li>
             <li><a href="/pattern-library-utilities/lib/convert-yaml.js.html">lib/convert-yaml.js</a></li>
@@ -83,10 +84,12 @@
             <li><a href="/pattern-library-utilities/lib/get-pattern-files.js.html">lib/get-pattern-files.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-styles.js.html">lib/get-pattern-styles.js</a></li>
             <li><a href="/pattern-library-utilities/lib/get-pattern-template-name.js.html">lib/get-pattern-template-name.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/logger.js.html">lib/logger.js</a></li>
             <li><a href="/pattern-library-utilities/lib/pattern-importer.js.html">lib/pattern-importer.js</a></li>
             <li><a href="/pattern-library-utilities/lib/utility.js.html">lib/utility.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/angular-templatecache.js.html">lib/gulp-tasks/angular-templatecache.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/browsersync.js.html">lib/gulp-tasks/browsersync.js</a></li>
+            <li><a href="/pattern-library-utilities/lib/gulp-tasks/clone.js.html">lib/gulp-tasks/clone.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/doxx.js.html">lib/gulp-tasks/doxx.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/file-glob-inject.js.html">lib/gulp-tasks/file-glob-inject.js</a></li>
             <li><a href="/pattern-library-utilities/lib/gulp-tasks/gh-pages.js.html">lib/gulp-tasks/gh-pages.js</a></li>
@@ -141,6 +144,11 @@
                 <td>STRING</td>
                 <td>stream|null</td>
               </tr>
+              <tr>
+                <td>newDest</td>
+                <td>STRING</td>
+                <td>destination different from filePath </td>
+              </tr>
             </tbody>
           </table>
           <div class="description"><p>Creates a vinyl file</p> </div>
@@ -148,13 +156,15 @@
   'use strict';
   var contents;
 
-  if (type == 'stream') {
+  if (type === 'stream') {
     contents = fs.createReadStream(filePath);
-  } else {
+  }
+  else {
 
     try {
       contents = fs.readFileSync(filePath);
-    } catch (e) {
+    }
+    catch (e) {
       throw new Error(filePath + ' cannot be read');
     }
 
@@ -203,15 +213,16 @@
                 <td>directory where we start looking for the file</td>
               </tr>
               <tr>
-                <td>type</td>
+                <td>contents</td>
                 <td>STRING</td>
-                <td>stream|null</td>
+                <td>the file's contents </td>
               </tr>
             </tbody>
           </table>
           <div class="description"><p>Creates a new vinyl file</p> </div>
           <pre><code class="language-javascript">exports.createNewFile = function (filePath, cwd, base, contents) {
   'use strict';
+
   return new File({
     path: filePath,
     cwd: cwd,
