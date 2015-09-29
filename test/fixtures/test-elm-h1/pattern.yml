@@ -5,6 +5,9 @@ sass: ./test-elm-h1.scss
 category: base
 subcategory: subcatbase
 script: ./test-elm-h1.js
+cloneSource:
+  path: test/fixtures/test-elm-h1
+  name: Heading Level 1 Test H1
 data:
   header:
     text: Test Header 1
