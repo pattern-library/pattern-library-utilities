@@ -1,4 +1,5 @@
 var utils = require('../');
+var log = require('../lib/logger').logger;
 var should = require('should');
 var chai = require('chai');
 var expect = chai.expect;
