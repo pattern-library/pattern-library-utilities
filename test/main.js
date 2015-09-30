@@ -232,7 +232,7 @@ describe('pattern utilities', function () {
 
     })
 
-    it('should default to css for pattern styles that do not match the default cssCompiler', function () {
+    it.skip('should default to css for pattern styles that do not match the default cssCompiler', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-img/pattern.yml'));
       var patternObject = utils.convertYamlToObject(file.contents);
@@ -312,7 +312,7 @@ describe('pattern utilities', function () {
 
     });
 
-    it('should determine the destination for patterns without a default templateEngine file', function () {
+    it.skip('should determine the destination for patterns without a default templateEngine file', function () {
 
       var file = utils.createFile(createTestFilePath('atoms/test-em/pattern.yml'));
       var paths = utils.getFilePaths(file);
