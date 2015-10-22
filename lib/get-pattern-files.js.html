@@ -181,6 +181,11 @@
     }
     else {
 
+      if (!patternObject[options.templateEngine]) {
+        log.warn('non-default templateEngine template found, import of ' + patternObject.name + 'skipped.');
+        return false;
+      }
+
       // no conversion
 
       // template file source
@@ -276,6 +281,7 @@
           }
         );
       }
+
       // iterate over an array of scripts
       scriptArray.forEach(function (script) {
 
@@ -283,7 +289,7 @@
         var fileSrc = path.join(paths.folder, script.name);
 
         // get the relative path to the js file destination
-        var fileDest = path.join(patternFiles.patternScriptsPath, script.name);
+        var fileDest = path.join(patternFiles.patternScriptsPath, path.basename(script.name));
 
         // create the vinyl version
         var file = utility.createFile(fileSrc, path.resolve('./'), '', '', fileDest);

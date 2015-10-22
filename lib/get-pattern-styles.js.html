@@ -136,14 +136,12 @@
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>Gets name and type of pattern style file. Defaults to .css file (if it exists)</p> </div>
+          <div class="description"><p>Gets name and type of pattern style file.</p> </div>
           <pre><code class="language-javascript">exports.getPatternStyles = function (patternObject, options) {
   'use strict';
+
   if (patternObject[options.cssCompiler]) {
     return createStyleArray(patternObject[options.cssCompiler], options.cssCompiler);
-  }
-  else if (patternObject.css) {
-    return createStyleArray(patternObject.css, 'css');
   }
   else {
     return false;
