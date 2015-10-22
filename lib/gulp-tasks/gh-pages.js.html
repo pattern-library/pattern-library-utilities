@@ -167,7 +167,7 @@ var mergeOptions = require('../get-options').mergeOptions;</code></pre>
           <pre><code class="language-javascript">exports.gulpGhPages = function (gulp, projectOptions) {
   'use strict';
   var options = mergeOptions(getDefaultOptions(), projectOptions);
-console.log(options);
+
   gulp.task(options.taskName, options.dependencies, function () {
     return gulp.src(options.src)
       .pipe(ghPages(options.config));
