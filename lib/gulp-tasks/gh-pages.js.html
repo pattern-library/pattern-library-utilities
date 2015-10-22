@@ -134,7 +134,14 @@ var mergeOptions = require('../get-options').mergeOptions;</code></pre>
   // default options for ghPages gulp task
   var options = {
     config: {},
-    src: ['./patternlab/public</code></pre>
+    src: ['./patternlab/public/'],
+    taskName: 'ghPages',
+    dependencies: [] // gulp tasks which should be run before this task
+
+  };
+
+  return options;
+};</code></pre>
           <section id="gulpGhPages">
             <h1>gulpGhPages</h1>
             <h5 class="subheader"></h5>
@@ -163,7 +170,7 @@ var mergeOptions = require('../get-options').mergeOptions;</code></pre>
               </tr>
             </tbody>
           </table>
-          <div class="description"><p>&#39;],<br />    taskName: &#39;ghPages&#39;,<br />    dependencies: [] // gulp tasks which should be run before this task</p><p>  };</p><p>  return options;<br />};</p><p>/**<br />Gulp task that sends files to the gh-pages branch on github.com</p> </div>
+          <div class="description"><p>Gulp task that sends files to the gh-pages branch on github.com</p> </div>
           <pre><code class="language-javascript">exports.gulpGhPages = function (gulp, projectOptions) {
   'use strict';
   var options = mergeOptions(getDefaultOptions(), projectOptions);
